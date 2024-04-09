@@ -1,2 +1,8 @@
 .idea/
 *.iml
+
+# VSCODE
+.vscode/
+
+# Config files...
+config.toml
