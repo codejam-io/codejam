@@ -3,15 +3,16 @@ package server
 import (
 	"codejam.io/config"
 	"codejam.io/database"
+	"codejam.io/logging"
 	"codejam.io/session"
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"golang.org/x/oauth2"
 	"golang.org/x/oauth2/github"
-	"log"
-	"net/http"
 	"os"
 )
+
+var logger = logging.NewLogger(logging.Options{Name: "Server"})
 
 type Server struct {
 	Config       config.Config
@@ -31,23 +32,6 @@ func (server *Server) EmbedTest(context *gin.Context) {
 	context.Writer.Write(content)
 }
 
-func (server *Server) GetOAuthRedirect(context *gin.Context) {
-	url := server.OAuth.AuthCodeURL("state")
-	context.Redirect(http.StatusFound, url)
-}
-
-func (server *Server) GetOAuthCallback(context *gin.Context) {
-	authCode := context.Query("code")
-	token, err := server.OAuth.Exchange(oauth2.NoContext, authCode)
-	if err != nil {
-		log.Fatal(err)
-	}
-	client := server.OAuth.Client(oauth2.NoContext, token)
-	fmt.Printf("DEBUG: OAuth Callback result: %+v\n", client)
-
-	// TODO redirect somewhere
-}
-
 func (server *Server) SetupSessionStore() {
 	_, err := session.NewPGXStoreFromPool(server.Database.Pool)
 	if err != nil {
@@ -58,6 +42,8 @@ func (server *Server) SetupSessionStore() {
 }
 
 func (server *Server) StartServer() {
+	logger.Info("Starting server...")
+
 	server.Gin = gin.Default()
 
 	server.OAuth = &oauth2.Config{
@@ -69,8 +55,12 @@ func (server *Server) StartServer() {
 
 	server.SetupSessionStore()
 
+	// Setup routes...
+	server.SetupOAuthRoutes()
+
+	// TODO: remove this test route
 	server.Gin.GET("/", server.EmbedTest)
-	server.Gin.GET("/oauth/redirect/", server.GetOAuthRedirect)
-	server.Gin.GET("/oauth/callback/", server.GetOAuthCallback)
+
+	// Start the server...
 	server.Gin.Run(server.Config.Server.Listen)
 }
