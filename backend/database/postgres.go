@@ -24,8 +24,6 @@ func (postgres *Postgres) Initialize() {
 		os.Exit(1)
 	}
 
-	defer pool.Close()
-
 	err = pool.Ping(context.Background())
 	if err != nil {
 		logger.Critical("Unable to connect to database: %+v\n", err)
