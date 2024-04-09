@@ -12,12 +12,14 @@ const DEBUG uint8 = 10
 const INFO uint8 = 20
 const WARN uint8 = 30
 const ERROR uint8 = 40
+const CRITICAL uint8 = 50
 
 type LoggerImpl interface {
 	Debug(msg string, args ...interface{})
 	Info(msg string, args ...interface{})
 	Warn(msg string, args ...interface{})
 	Error(msg string, args ...interface{})
+	Critical(msg string, args ...interface{})
 }
 
 type Options struct {
@@ -32,26 +34,42 @@ type Logger struct {
 	noColor bool
 }
 
-func (logger *Logger) format(level string, message string, args ...interface{}) string {
-	timestamp := time.Now().Format(time.DateTime)
+func (logger *Logger) format(level uint8, message string, args ...interface{}) string {
+	timestamp := time.Now().Format("2006-01-02 15:04:05.0000")
 	msg := fmt.Sprintf(message, args...)
 
-	if logger.noColor {
-		return fmt.Sprintf("%s [%-5s] %s: %s", timestamp, level, logger.name, msg)
-	}
+	var levelS string
+	var levelN string
 
 	switch level {
-	case "DEBUG":
-		level = "\x1b[1;47mDEBUG\x1b[0m"
-	case "INFO":
-		level = "\x1b[1;34mINFO\x1b[0m"
-	case "WARN":
-		level = "\x1b[1;33mWARN\x1b[0m"
-	case "ERROR":
-		level = "\x1b[1;31mERROR\x1b[0m"
+	case DEBUG:
+		levelS = "\x1b[1;47mDEBUG\x1b[0m"
+		levelN = "DEBUG"
+	case INFO:
+		levelS = "\x1b[1;34mINFO\x1b[0m"
+		levelN = "INFO"
+	case WARN:
+		levelS = "\x1b[1;33mWARN\x1b[0m"
+		levelN = "WARN"
+	case ERROR:
+		levelS = "\x1b[1;31mERROR\x1b[0m"
+		levelN = "ERROR"
+	case CRITICAL:
+		levelN = "CRITICAL"
+	default:
+		levelS = "\x1b[1;47mUNSET\x1b[0m"
+		levelN = "UNSET"
 	}
 
-	return fmt.Sprintf("\x1b[90m%s\x1b[0m %-17s\x1b[36m%s\x1b[0m %s", timestamp, level, logger.name, msg)
+	if logger.noColor {
+		return fmt.Sprintf("%s [%-8s] %s: %s", timestamp, levelN, logger.name, msg)
+	}
+
+	if level == CRITICAL {
+		return fmt.Sprintf("\x1b[1;31m%s CRITICAL\x1b[0m \x1b[36m%s\x1b[0m %s", timestamp, logger.name, msg)
+	}
+
+	return fmt.Sprintf("\x1b[90m%s\x1b[0m %-17s\x1b[36m%s\x1b[0m %s", timestamp, levelS, logger.name, msg)
 }
 
 func (logger *Logger) Debug(msg string, args ...interface{}) {
@@ -59,7 +77,7 @@ func (logger *Logger) Debug(msg string, args ...interface{}) {
 		return
 	}
 
-	formatted := logger.format("DEBUG", msg, args...)
+	formatted := logger.format(DEBUG, msg, args...)
 	log.Println(formatted)
 }
 
@@ -68,7 +86,7 @@ func (logger *Logger) Info(msg string, args ...interface{}) {
 		return
 	}
 
-	formatted := logger.format("INFO", msg, args...)
+	formatted := logger.format(INFO, msg, args...)
 	log.Println(formatted)
 }
 
@@ -77,7 +95,7 @@ func (logger *Logger) Warn(msg string, args ...interface{}) {
 		return
 	}
 
-	formatted := logger.format("WARN", msg, args...)
+	formatted := logger.format(WARN, msg, args...)
 	log.Println(formatted)
 }
 
@@ -86,7 +104,16 @@ func (logger *Logger) Error(msg string, args ...interface{}) {
 		return
 	}
 
-	formatted := logger.format("ERROR", msg, args...)
+	formatted := logger.format(ERROR, msg, args...)
+	log.Println(formatted)
+}
+
+func (logger *Logger) Critical(msg string, args ...interface{}) {
+	if logger.level > 50 {
+		return
+	}
+
+	formatted := logger.format(CRITICAL, msg, args...)
 	log.Println(formatted)
 }
 
@@ -96,6 +123,7 @@ func NewLogger(options Options) LoggerImpl {
 	if options.Name == "" {
 		options.Name = "__root__"
 	}
+
 	logger := &Logger{name: options.Name}
 
 	switch options.Level {
@@ -109,6 +137,8 @@ func NewLogger(options Options) LoggerImpl {
 		logger.level = WARN
 	case 40:
 		logger.level = ERROR
+	case 50:
+		logger.level = CRITICAL
 	default:
 		logger.level = INFO
 	}
