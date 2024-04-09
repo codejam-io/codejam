@@ -69,7 +69,7 @@ func (logger *Logger) format(level uint8, message string, args ...interface{}) s
 		return fmt.Sprintf("\x1b[1;31m%s CRITICAL\x1b[0m \x1b[36m%s\x1b[0m %s", timestamp, logger.name, msg)
 	}
 
-	return fmt.Sprintf("\x1b[90m%s\x1b[0m %-17s\x1b[36m%s\x1b[0m %s", timestamp, levelS, logger.name, msg)
+	return fmt.Sprintf("\x1b[90m%s\x1b[0m %-20s\x1b[36m%s\x1b[0m %s", timestamp, levelS, logger.name, msg)
 }
 
 func (logger *Logger) Debug(msg string, args ...interface{}) {
