@@ -10,7 +10,7 @@ func main() {
 	// TODO setup logger
 
 	config := new(config.Config)
-	config.LoadFromFile("codejam.toml")
+	config.LoadFromFile("config.toml")
 
 	database := new(database.Postgres)
 	database.Initialize()
