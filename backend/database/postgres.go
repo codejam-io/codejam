@@ -2,24 +2,36 @@ package database
 
 import (
 	"codejam.io/config"
+	"codejam.io/logging"
 	"context"
-	"fmt"
 	"github.com/jackc/pgx/v5/pgxpool"
 	"os"
 )
 
+var logger = logging.NewLogger(logging.Options{Name: "Database", Level: logging.INFO})
+
 type Postgres struct {
-	Config config.Config
+	Config *config.DBConfig
 	Pool   *pgxpool.Pool
 }
 
 func (postgres *Postgres) Initialize() {
-	pool, err := pgxpool.New(context.Background(), postgres.Config.Database.Url)
+	logger.Info("Connecting to database")
+
+	pool, err := pgxpool.New(context.Background(), postgres.Config.Url)
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "Unabled to create connection pool: %v\n", err)
+		logger.Critical("Unable to initialise new pxpool.Pool: %+v\n", err)
 		os.Exit(1)
 	}
-	pool.Config().MaxConns = postgres.Config.Database.MaxConnections
+
+	defer pool.Close()
+
+	err = pool.Ping(context.Background())
+	if err != nil {
+		logger.Critical("Unable to connect to database: %+v\n", err)
+		os.Exit(1)
+	}
+
 	postgres.Pool = pool
-	fmt.Fprintf(os.Stdout, "Connected to database\n")
+	logger.Info("Connected to database")
 }
