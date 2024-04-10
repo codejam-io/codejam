@@ -4,22 +4,18 @@ import (
 	"codejam.io/config"
 	"codejam.io/database"
 	"codejam.io/logging"
-	"codejam.io/session"
-	"fmt"
 	"github.com/gin-gonic/gin"
 	"golang.org/x/oauth2"
 	"golang.org/x/oauth2/github"
-	"os"
 )
 
 var logger = logging.NewLogger(logging.Options{Name: "Server"})
 
 type Server struct {
-	Config       config.Config
-	Database     database.Postgres
-	OAuth        *oauth2.Config
-	Gin          *gin.Engine
-	SessionStore session.PGXStore
+	Config   config.Config
+	Database database.Postgres
+	OAuth    *oauth2.Config
+	Gin      *gin.Engine
 }
 
 func (server *Server) EmbedTest(context *gin.Context) {
@@ -33,12 +29,7 @@ func (server *Server) EmbedTest(context *gin.Context) {
 }
 
 func (server *Server) SetupSessionStore() {
-	_, err := session.NewPGXStoreFromPool(server.Database.Pool)
-	if err != nil {
-		fmt.Fprintf(os.Stderr, "Unable to setup session store: %v\n", err)
-		os.Exit(1)
-	}
-	// TODO setup session store in Gin
+	// Todo - Redis? Postgres?
 }
 
 func (server *Server) StartServer() {
