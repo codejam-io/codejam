@@ -1,38 +1,43 @@
-# create-svelte
+# CodeJam Website
 
-Everything you need to build a Svelte project, powered by [`create-svelte`](https://github.com/sveltejs/kit/tree/main/packages/create-svelte).
+Framework: [SvelteKit](https://kit.svelte.dev/docs/introduction)
 
-## Creating a project
+Component Library: [flowbite-svelte](https://flowbite-svelte.com/)
 
-If you're seeing this, you've probably already done this step. Congrats!
+Icon Library: [FontAwesome](https://fontawesome.com/icons)
 
+## Initial Setup
+
+The first time using this repo, run 
 ```bash
-# create a new project in the current directory
-npm create svelte@latest
-
-# create a new project in my-app
-npm create svelte@latest my-app
+npm install
 ```
 
-## Developing
-
-Once you've created a project and installed dependencies with `npm install` (or `pnpm install` or `yarn`), start a development server:
-
+To run the site locally:
 ```bash
 npm run dev
-
-# or start the server and open the app in a new browser tab
+```
+or
+```
+# to start the server and open the app in a new browser tab
 npm run dev -- --open
 ```
 
-## Building
 
-To create a production version of your app:
+## Dev Info
 
-```bash
-npm run build
-```
+### Site Rendering
+The site will be built as an SPA, by way of the `prerender` flag being set to true in `routes/+layout.js`, and
+using [`adapter-static`](https://kit.svelte.dev/docs/adapter-static)
 
-You can preview the production build with `npm run preview`.
 
-> To deploy your app, you may need to install an [adapter](https://kit.svelte.dev/docs/adapters) for your target environment.
+### Routing & Page Content
+The routing mostly follows the standard [SvelteKit concept](https://kit.svelte.dev/docs/routing) with the exception 
+that the actual page content is stored in a descriptive Svelte component next to the +page.svelte file.
+
+For example, the home page for the `/` route is named HomePage.svelte, and the +page.svelte will simply import that 
+component and use it.
+
+The reason for this is personal preference, to be able to quickly open files by name.  I don't like having a bunch
+of frequently edited +page.svelte files where the only differentiator is the directory they reside in.
+
