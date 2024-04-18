@@ -3,10 +3,15 @@
 </script>
 
 <style>
-    .banner {
-        height: 10rem;
+    .banner-tecj {
+        height: 13rem;
     }
 </style>
-<div class="flex banner">
-    <img {src} alt="TimeEnjoyed Codejam 2024 text">
+<div class="banner-tecj">
+    <div class="banner-top">
+        TimeEnjoyed's
+    </div>
+    <div class="banner-bottom">
+        &lt;codejam/&gt;
+    </div>
 </div>

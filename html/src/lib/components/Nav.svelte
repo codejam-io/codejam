@@ -11,7 +11,7 @@
 	<ul class="flex row sp-between nav-ul">
 		<li><a href="#" on:click|preventDefault={()=> setActiveContent('goals')}>Goal</a></li>  
 		<li><a href="#" on:click|preventDefault={()=> setActiveContent('timeline')}>Timeline</a></li>
-		<li><a href="/rules">Rules</a></li>
+		<li><a href="#" on:click|preventDefault={()=> setActiveContent('rules')}>Rules</a></li>
 	</ul>
 </nav>
 

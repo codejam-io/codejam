@@ -45,17 +45,41 @@ overflow-wrap: break-word;
 isolation: isolate;
 }
 * {
-    outline: 2px solid red;
+    outline: 0px solid red;
+}
+.fira-code-nav {
+    font-family: "Fira Code", monospace;
+    font-optical-sizing: auto;
+    font-weight: 400;
+    font-style: normal;
 }
 :root {
     --primary-color: white;
+    --background-color: #3a4080;
+    --background-gradient: pink;
+    --card-color: #ece8d8cd;
+    --card-font-color: #2a2e5d;
 }
 body {
-    background-color: rgb(59, 59, 59);
-    font-style: Arial;
+    color: white;
+    font-size: 2rem;
+    font-family: "Fira Code", monospace;
+    font-optical-sizing: auto;
+    font-weight: 400;
+    font-style: normal;
     color: var(--primary-color);
+    background: rgb(190,138,110);
+    background: linear-gradient(90deg, rgba(190,138,110,1) 0%, rgba(190,110,178,1) 100%);
 }
-.flex {
+a {
+    color: white;
+    text-decoration: None;
+
+}
+a:hover {
+    color: black;
+}
+    .flex {
     display: flex;
 }
 .row {
@@ -72,4 +96,45 @@ body {
 }
 .sp-between {
     align-content: space-between;
+}
+.card {
+    border-radius: 15px;
+    background-color: var(--card-color);
+    margin-bottom: 2rem;
+}
+.banner {
+    position: fixed;
+    z-index: 1;
+    display: flex;
+    flex-direction: row;
+    gap: 1em;
+    padding-left: 1em;
+    width: calc(100% - 6em);
+    height: 3.5em;
+}
+.banner-top {
+    font-size: 2em;
+    font-family: 'Liu Jian Mao Cao', cursive;
+    text-align: center;
+}
+.banner-bottom {
+    margin-top: -2rem;
+    font-size: 3em;
+    text-wrap: none;
+    text-align: center;
+}
+.banner-bottom {
+    text-shadow: 
+        0 0 0.05em pink, /* Horizontal offset, vertical offset, blur radius, color */
+        0.05em 0 0.05em pink,
+        -0.05em 0 0.05em pink,
+        0 0.05em 0.05em rgb(161, 107, 222),
+        0 -0.05em 0.05em pink,
+        0.05em 0.05em 0.05em rgb(55, 149, 193),
+        -0.05em -0.05em 0.05em pink,
+        0.05em -0.05em 0.05em pink,
+        -0.05em 0.05em 0.05em pink;
+}
+.center {
+    justify-content: center;
 }
