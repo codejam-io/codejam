@@ -5,25 +5,35 @@ import (
 	"os"
 )
 
-type DBConfig struct {
-	Url            string
-	MaxConnections int32
-}
-
-type GitHubConfig struct {
-	Id          string
-	Secret      string
-	RedirectUrl string
+type Config struct {
+	Server   ServerConfig
+	Database DBConfig
+	Redis    RedisConfig
+	OAuth    OAuthConfig
 }
 
 type ServerConfig struct {
 	Listen string
 }
 
-type Config struct {
-	Server   ServerConfig
-	Database DBConfig
-	GitHub   GitHubConfig
+type DBConfig struct {
+	Url            string
+	MaxConnections int32
+}
+
+type RedisConfig struct {
+	Protocol string
+	Address  string
+	Password string
+	Size     int
+}
+
+type OAuthConfig struct {
+	Provider    string
+	Id          string
+	Secret      string
+	RedirectUrl string
+	Scopes      []string
 }
 
 func (config *Config) LoadFromFile(filename string) {

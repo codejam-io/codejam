@@ -4,12 +4,14 @@ import (
 	"codejam.io/config"
 	"codejam.io/database"
 	"codejam.io/logging"
+	"github.com/gin-contrib/sessions"
+	"github.com/gin-contrib/sessions/redis"
 	"github.com/gin-gonic/gin"
 	"golang.org/x/oauth2"
-	"golang.org/x/oauth2/github"
+	"os"
 )
 
-var logger = logging.NewLogger(logging.Options{Name: "Server"})
+var logger = logging.NewLogger(logging.Options{Name: "Server", Level: logging.DEBUG})
 
 type Server struct {
 	Config   config.Config
@@ -18,18 +20,19 @@ type Server struct {
 	Gin      *gin.Engine
 }
 
-func (server *Server) EmbedTest(context *gin.Context) {
-	content, err := GetHtmlFile("html_files/index.html")
-	if err != nil {
-		context.Error(err)
-		return
-	}
-
-	context.Writer.Write(content)
-}
-
 func (server *Server) SetupSessionStore() {
-	// Todo - Redis? Postgres?
+	store, err := redis.NewStore(
+		server.Config.Redis.Size,
+		server.Config.Redis.Protocol,
+		server.Config.Redis.Address,
+		server.Config.Redis.Password,
+		[]byte(""))
+
+	if err != nil {
+		logger.Critical("error initializing Redis session store: %v", err)
+		os.Exit(1)
+	}
+	server.Gin.Use(sessions.Sessions("session", store))
 }
 
 func (server *Server) StartServer() {
@@ -37,20 +40,12 @@ func (server *Server) StartServer() {
 
 	server.Gin = gin.Default()
 
-	server.OAuth = &oauth2.Config{
-		ClientID:     server.Config.GitHub.Id,
-		ClientSecret: server.Config.GitHub.Secret,
-		Endpoint:     github.Endpoint,
-		RedirectURL:  server.Config.GitHub.RedirectUrl,
-	}
-
+	server.SetupOAuth()
 	server.SetupSessionStore()
 
 	// Setup routes...
 	server.SetupOAuthRoutes()
-
-	// TODO: remove this test route
-	server.Gin.GET("/", server.EmbedTest)
+	server.SetupStaticRoutes()
 
 	// Start the server...
 	server.Gin.Run(server.Config.Server.Listen)
