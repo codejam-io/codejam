@@ -1,12 +1,19 @@
-[server]
+[Server]
 listen = "0.0.0.0:8080"
 
-[database]
+[Database]
 url = "postgres://username:password@127.0.0.1:5432/database"
 maxconnections = 16
 
-[github]
-# for OAuth
+[Redis]
+address = "localhost:6379"
+protocol = "tcp"
+password = ""
+size = 10
+
+[OAuth]
+provider = "GitHub"
 id = ""
 secret = ""
-redirectUrl = "http://localhost/oauth/callback"
+redirectUrl = "http://localhost:8080/oauth/callback"
+scopes = [""]
