@@ -34,9 +34,6 @@
                 code
             </li>
         </ul>
-        <div class="flex row sp-around">
-            <LoginBtn />
-        </div>
     </div>
     <img {src} alt="toast with jam and code on it">
 </div>
