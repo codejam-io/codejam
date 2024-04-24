@@ -1,0 +1,25 @@
+[Server]
+listen = "0.0.0.0:8080"
+# For development, you can proxy the live dev site running under Vite by setting this to the url of that instance
+# staticProxy = "http://localhost:5173"
+
+[Database]
+url = "postgres://username:password@127.0.0.1:5432/database"
+maxconnections = 16
+
+# Redis is used for Session caching
+[Redis]
+address = "localhost:6379"
+protocol = "tcp"
+password = ""
+size = 10
+cookieStoreSecret = "secret-cookie"
+
+# For OAuth you must register an app on the platform you plan on using and fill out the appropriate settings.
+# For Production deployments the redirectUrl will need to be modified to the external host/port the site is running on
+[OAuth]
+provider = ""  # GitHub or Discord currently supported
+id = ""
+secret = ""
+redirectUrl = "http://localhost:8080/oauth/callback"
+scopes = [""]

@@ -25,12 +25,10 @@ func main() {
 	config := new(config.Config)
 	config.LoadFromFile("config.toml")
 
-	database := database.Postgres{Config: &config.Database}
-	database.Initialize()
+	database.Initialize(config.Database)
 
 	server := server.Server{
-		Config:   *config,
-		Database: database,
+		Config: *config,
 	}
 	server.StartServer()
 }

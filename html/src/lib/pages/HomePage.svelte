@@ -1,4 +1,19 @@
 <script lang="ts">
+    import {Button} from "flowbite-svelte";
+    import DiscordIcon from "../components/DiscordIcon.svelte";
+    import {baseApiUrl, logout} from "../services/services";
+    import {userStore} from "../stores/stores";
+
+    let loggedIn : boolean = false;
+
+    userStore.subscribe((value) => {
+        loggedIn = value != null;
+    });
+
+    function login() {
+        window.location = baseApiUrl +  '/oauth/redirect';
+    }
+
 	import '../../styles/styles.css';
 	import Nav from '../components/Nav.svelte';
 	import Banner from '../components/Banner.svelte';
@@ -8,6 +23,7 @@
 	import Panel from '../components/Panel.svelte';
 	import Content from '../components/Content.svelte';
 </script>
+
 
 <div class="flex col">
 	<!-- <GradientChange /> -->
