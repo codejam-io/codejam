@@ -13,7 +13,8 @@ type Config struct {
 }
 
 type ServerConfig struct {
-	Listen string
+	Listen      string
+	StaticProxy string
 }
 
 type DBConfig struct {
@@ -22,10 +23,11 @@ type DBConfig struct {
 }
 
 type RedisConfig struct {
-	Protocol string
-	Address  string
-	Password string
-	Size     int
+	Protocol          string
+	Address           string
+	Password          string
+	Size              int
+	CookieStoreSecret string
 }
 
 type OAuthConfig struct {

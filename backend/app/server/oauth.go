@@ -1,10 +1,13 @@
 package server
 
 import (
+	"codejam.io/database"
+	"codejam.io/integrations"
+	"github.com/emicklei/pgtalk/convert"
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/gin"
 	"golang.org/x/oauth2"
-	"golang.org/x/oauth2/github"
+	githubOAuth "golang.org/x/oauth2/github"
 	"net/http"
 	"os"
 	"strings"
@@ -16,7 +19,7 @@ func (server *Server) SetupOAuth() {
 
 	switch strings.ToLower(server.Config.OAuth.Provider) {
 	case "github":
-		endpoint = github.Endpoint
+		endpoint = githubOAuth.Endpoint
 	case "discord":
 		endpoint = oauth2.Endpoint{
 			AuthURL:  "https://discord.com/oauth2/authorize",
@@ -37,12 +40,13 @@ func (server *Server) SetupOAuth() {
 }
 
 func (server *Server) GetOAuthRedirect(ctx *gin.Context) {
-	url := server.OAuth.AuthCodeURL("state")
+	url := server.OAuth.AuthCodeURL(ctx.Request.Header.Get("Referer"))
 	ctx.Redirect(http.StatusFound, url)
 }
 
 func (server *Server) GetOAuthCallback(ctx *gin.Context) {
 	authCode := ctx.Query("code")
+	redir := ctx.Query("state")
 	token, err := server.OAuth.Exchange(oauth2.NoContext, authCode)
 	if err != nil {
 		// todo - can any of these be handled?
@@ -50,10 +54,23 @@ func (server *Server) GetOAuthCallback(ctx *gin.Context) {
 		return
 	}
 
-	sess := sessions.Default(ctx)
-	sess.Set("access_token", token.AccessToken)
-	sess.Set("refresh_token", token.RefreshToken)
-	sess.Save()
+	integrationName := strings.ToLower(server.Config.OAuth.Provider)
+	providerUser := integrations.GetUser(integrationName, token.AccessToken)
+	if providerUser != nil {
+		dbUser := database.CreateUser(integrationName, providerUser.UserId, providerUser.DisplayName)
+		session := sessions.Default(ctx)
+		session.Set("userId", convert.UUIDToString(dbUser.Id))
+		session.Set("displayName", dbUser.DisplayName)
+		err = session.Save()
+		if err != nil {
+			logger.Error("Error saving session: %v", err)
+		}
+
+		ctx.Redirect(http.StatusFound, redir)
+	} else {
+		// TODO error page
+		logger.Error("Unable to lookup provider user for %s", integrationName)
+	}
 }
 
 func (server *Server) SetupOAuthRoutes() {

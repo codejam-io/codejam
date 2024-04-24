@@ -1,9 +1,9 @@
 #!/bin/bash
 
 
-cd html
+cd html || return
 npm install
 npm run build
 
-mkdir -p ../backend/server/static_files
-cp -r dist/* ../backend/server/static_files/
+mkdir -p ../backend/app/server/static_files
+cp -r dist/* ../backend/app/server/static_files/

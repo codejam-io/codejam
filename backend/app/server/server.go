@@ -2,7 +2,6 @@ package server
 
 import (
 	"codejam.io/config"
-	"codejam.io/database"
 	"codejam.io/logging"
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-contrib/sessions/redis"
@@ -13,26 +12,35 @@ import (
 
 var logger = logging.NewLogger(logging.Options{Name: "Server", Level: logging.DEBUG})
 
+var SessionCookieName string = "session"
+
 type Server struct {
-	Config   config.Config
-	Database database.Postgres
-	OAuth    *oauth2.Config
-	Gin      *gin.Engine
+	Config config.Config
+	OAuth  *oauth2.Config
+	Gin    *gin.Engine
 }
 
 func (server *Server) SetupSessionStore() {
+	logger.Info("Setting up Session Store")
+
 	store, err := redis.NewStore(
 		server.Config.Redis.Size,
 		server.Config.Redis.Protocol,
 		server.Config.Redis.Address,
 		server.Config.Redis.Password,
-		[]byte(""))
-
+		[]byte(server.Config.Redis.CookieStoreSecret))
 	if err != nil {
-		logger.Critical("error initializing Redis session store: %v", err)
+		logger.Critical("Error initializing Redis session store: %v", err)
 		os.Exit(1)
 	}
-	server.Gin.Use(sessions.Sessions("session", store))
+
+	store.Options(sessions.Options{
+		Path:     "/",
+		MaxAge:   60 * 60 * 24 * 90,
+		Secure:   true,
+		HttpOnly: true,
+	})
+	server.Gin.Use(sessions.Sessions(SessionCookieName, store))
 }
 
 func (server *Server) StartServer() {
@@ -40,11 +48,12 @@ func (server *Server) StartServer() {
 
 	server.Gin = gin.Default()
 
-	server.SetupOAuth()
 	server.SetupSessionStore()
+	server.SetupOAuth()
 
 	// Setup routes...
 	server.SetupOAuthRoutes()
+	server.SetupUserRoutes()
 	server.SetupStaticRoutes()
 
 	// Start the server...
