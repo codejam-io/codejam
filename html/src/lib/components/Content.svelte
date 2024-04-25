@@ -1,9 +1,12 @@
-<script>
+<script lang="ts">
 import TextGoals from "./Info/TextGoals.svelte";
 import TextTimeline from "./Info/TextTimeline.svelte";
 import TextRules from "./Info/TextRules.svelte";
-import { activeContent, loggedIn } from "../stores";
+import { activeContent } from "../stores/stores";
 import SubProfile from "./SubProfile.svelte";
+import {userStore, loggedInStore} from "../stores/stores";
+    
+
 
 
 </script>
@@ -23,7 +26,7 @@ import SubProfile from "./SubProfile.svelte";
 <div class="content"> 
 
 
-    {#if $loggedIn}
+    {#if loggedInStore}
     <!-- profile not a module: -->
     <div id="profile" class="card"><SubProfile /></div>
     <!--I want these divs to appear as a module: -->

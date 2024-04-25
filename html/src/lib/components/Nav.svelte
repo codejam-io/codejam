@@ -1,23 +1,24 @@
 <script lang="ts">
-	import { activeContent } from '../stores';
+	import { activeContent } from '../stores/stores';
 	import { Button, Modal } from 'flowbite-svelte';
 	let goalsModal = false;
 	let timelineModal = false;
 	let rulesModal = false;
+    import {userStore, loggedInStore} from "../stores/stores";
+    
 
 	function setActiveContent(content: string) {
 		activeContent.set(content);
 		console.log(activeContent);
-		if ($loggedIn) {
+		if (loggedIn) {
 			document.getElementById(content)?.classList.add('card-module');
 		}
 	}
-	import { loggedIn } from '../stores'; // Import the loggedIn store
 </script>
 
 <nav>
 	<ul class="flex row sp-between nav-ul">
-		{#if $loggedIn}
+		{#if loggedInStore}
 			<!-- LOGGED IN -->
 			<!-- # have a codejam badge -->
 			<li>
@@ -42,7 +43,7 @@
 					>Rules</Button
 				>
 			</li>
-		{:else if !$loggedIn}
+		{:else if !loggedInStore}
 			<!-- NOT LOGGED IN -->
 			<!-- Currently work as anchor tags -->
 			<li>
@@ -107,11 +108,6 @@
 </Modal>
 
 <style>
-	.profile-link {
-		border: 2px solid;
-		border-radius: 15px;
-		padding: 0.5rem;
-	}
 	.nav-ul {
 		padding: 1rem;
 		justify-content: space-around;
