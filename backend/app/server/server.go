@@ -54,6 +54,7 @@ func (server *Server) StartServer() {
 	// Setup routes...
 	server.SetupOAuthRoutes()
 	server.SetupUserRoutes()
+	server.SetupEventRoutes()
 	server.SetupStaticRoutes()
 
 	// Start the server...
