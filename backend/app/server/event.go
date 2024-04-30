@@ -52,6 +52,8 @@ func (server *Server) UpdateEvent(ctx *gin.Context) {
 		err := ctx.ShouldBindJSON(&event)
 		if err != nil {
 			logger.Error("UpdateEvent Request ShouldBindJSON error: %v", err)
+			ctx.Status(http.StatusBadRequest)
+			return
 		}
 		event, err = database.UpdateEvent(event)
 		if err != nil {
