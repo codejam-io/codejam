@@ -58,5 +58,6 @@ func (server *Server) StartServer() {
 	server.SetupStaticRoutes()
 
 	// Start the server...
+	logger.Info("Server Started")
 	server.Gin.Run(server.Config.Server.Listen)
 }

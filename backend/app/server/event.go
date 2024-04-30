@@ -17,6 +17,17 @@ func (server *Server) GetAllEvents(ctx *gin.Context) {
 	}
 }
 
+func (server *Server) GetEvent(ctx *gin.Context) {
+	id := ctx.Param("id")
+	event, err := database.GetEvent(convert.StringToUUID(id))
+	if err == nil {
+		ctx.JSON(http.StatusOK, event)
+	} else {
+		logger.Error("GetEvent error: %v", err)
+		ctx.Status(http.StatusInternalServerError)
+	}
+}
+
 func (server *Server) CreateEvent(ctx *gin.Context) {
 	session := sessions.Default(ctx)
 	userId := session.Get("userId")
@@ -33,14 +44,24 @@ func (server *Server) CreateEvent(ctx *gin.Context) {
 	}
 }
 
-func (server *Server) GetEvent(ctx *gin.Context) {
-	id := ctx.Param("id")
-	event, err := database.GetEvent(convert.StringToUUID(id))
-	if err == nil {
-		ctx.JSON(http.StatusOK, event)
+func (server *Server) UpdateEvent(ctx *gin.Context) {
+	session := sessions.Default(ctx)
+	userId := session.Get("userId")
+	if userId != nil {
+		var event database.DBEvent
+		err := ctx.ShouldBindJSON(&event)
+		if err != nil {
+			logger.Error("UpdateEvent Request ShouldBindJSON error: %v", err)
+		}
+		event, err = database.UpdateEvent(event)
+		if err != nil {
+			logger.Error("Error calling database.UpdateEvent: %v", err)
+			ctx.Status(http.StatusInternalServerError)
+		} else {
+			ctx.JSON(http.StatusOK, event)
+		}
 	} else {
-		logger.Error("GetEvent error: %v", err)
-		ctx.Status(http.StatusInternalServerError)
+		ctx.Status(http.StatusUnauthorized)
 	}
 }
 
@@ -48,7 +69,8 @@ func (server *Server) SetupEventRoutes() {
 	group := server.Gin.Group("/event")
 	{
 		group.GET("/", server.GetAllEvents)
-		group.POST("/", server.CreateEvent)
 		group.GET("/:id", server.GetEvent)
+		group.PUT("/:id", server.UpdateEvent)
+		group.POST("/", server.CreateEvent)
 	}
 }
