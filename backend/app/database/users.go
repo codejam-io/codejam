@@ -1,67 +1,40 @@
 package database
 
 import (
-	"context"
-	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgtype"
 )
 
 type DBUser struct {
-	Id            pgtype.UUID
-	ServiceName   string
-	ServiceUserId string
-	DisplayName   string
-	CreatedOn     pgtype.Timestamp
-	ModifiedOn    pgtype.Timestamp
+	Id            pgtype.UUID      `db:"id" `
+	ServiceName   string           `db:"service_name"`
+	ServiceUserId string           `db:"service_user_id" json:"-"`
+	DisplayName   string           `db:"display_name"`
+	CreatedOn     pgtype.Timestamp `db:"created_on" json:"-"`
 }
 
-func CreateUser(serviceName string, serviceUserId string, serviceDisplayName string) *DBUser {
-	conn, err := Pool.Acquire(context.Background())
-	if err != nil {
-		logger.Error("acquire conn error %v", err)
-		return nil
-	}
-	defer conn.Release()
-
-	row := conn.QueryRow(
-		context.Background(),
+func CreateUser(serviceName string, serviceUserId string, serviceDisplayName string) DBUser {
+	user, err := GetRow[DBUser](
 		`INSERT INTO users (service_name, service_user_id, display_name)
 		 VALUES ($1, $2, $3)
 		 ON CONFLICT (service_name, service_user_id)
 		 DO UPDATE
 		 SET display_name = $3
-		 RETURNING id`,
+		 RETURNING *`,
 		serviceName, serviceUserId, serviceDisplayName)
-
-	var result DBUser
-	err = row.Scan(&result.Id)
 	if err != nil {
-		logger.Error("scan error %v", err)
+		logger.Error("error getting user: %v", err)
 	}
-
-	return &result
+	return user
 }
 
-func GetUser(userId pgtype.UUID) *DBUser {
-	conn, err := Pool.Acquire(context.Background())
-	if err != nil {
-		logger.Error("acquire conn error %v", err)
-		return nil
-	}
-	defer conn.Release()
-
-	row := conn.QueryRow(
-		context.Background(),
-		`SELECT id, service_name, service_user_id, display_name, created_on
+func GetUser(userId pgtype.UUID) DBUser {
+	user, err := GetRow[DBUser](
+		`SELECT *
 		 FROM users 
 		 WHERE id = $1`,
 		userId)
-
-	var result DBUser
-	err = row.Scan(&result.Id, &result.ServiceName, &result.ServiceUserId, &result.DisplayName, &result.CreatedOn)
-	if err != nil && err != pgx.ErrNoRows {
-		logger.Error("GetUser: scan error %v", err)
+	if err != nil {
+		logger.Error("error getting user: %v", err)
 	}
-
-	return &result
+	return user
 }
