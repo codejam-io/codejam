@@ -19,7 +19,7 @@ CREATE TABLE IF NOT EXISTS events (
     organizer_user_id UUID NOT NULL,
     max_teams integer default -1,
     starts_at TIMESTAMP WITH TIME ZONE,
-    end_at TIMESTAMP WITH TIME ZONE,
+    ends_at TIMESTAMP WITH TIME ZONE,
     created_on TIMESTAMP WITH TIME ZONE DEFAULT (now() AT TIME ZONE('utc'))
 );
 
