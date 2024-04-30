@@ -2,24 +2,22 @@ package database
 
 import "github.com/jackc/pgx/v5/pgtype"
 
-// These fields need to match the order of the fields in the database
 type DBEvent struct {
-	Id              pgtype.UUID
-	StatusId        int
-	Title           string
-	Description     string
-	Rules           string
-	OrganizerUserId pgtype.UUID
-	MaxTeams        int
-	StartsAt        pgtype.Timestamp
-	EndsAt          pgtype.Timestamp
-	CreatedOn       pgtype.Timestamp
+	Id              pgtype.UUID      `db:"id"`
+	StatusId        int              `db:"status_id"`
+	Title           string           `db:"title"`
+	Description     string           `db:"description"`
+	Rules           string           `db:"rules"`
+	OrganizerUserId pgtype.UUID      `db:"organizer_user_id"`
+	MaxTeams        int              `db:"max_teams"`
+	StartsAt        pgtype.Timestamp `db:"starts_at"`
+	EndsAt          pgtype.Timestamp `db:"ends_at"`
+	CreatedOn       pgtype.Timestamp `db:"created_on"`
 }
 
 func CreateEvent(organizerUserId pgtype.UUID) (DBEvent, error) {
 	var event DBEvent
-	err := GetRow(
-		&event,
+	event, err := GetRow[DBEvent](
 		`INSERT INTO events
            (status_id, title, description, rules, organizer_user_id)
          VALUES
@@ -35,10 +33,13 @@ func CreateEvent(organizerUserId pgtype.UUID) (DBEvent, error) {
 }
 
 func GetEvent(eventId pgtype.UUID) (DBEvent, error) {
-	var event DBEvent
-	err := GetRow(
-		&event,
+	event, err := GetRow[DBEvent](
 		`SELECT * FROM events WHERE id = $1`,
 		eventId)
 	return event, err
+}
+
+func GetEvents() ([]DBEvent, error) {
+	result, err := GetRows[DBEvent](`SELECT * FROM events`)
+	return result, err
 }

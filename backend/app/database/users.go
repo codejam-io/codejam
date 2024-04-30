@@ -5,17 +5,15 @@ import (
 )
 
 type DBUser struct {
-	Id            pgtype.UUID
-	ServiceName   string
-	ServiceUserId string
-	DisplayName   string
-	CreatedOn     pgtype.Timestamp
+	Id            pgtype.UUID      `db:"id"`
+	ServiceName   string           `db:"service_name"`
+	ServiceUserId string           `db:"service_user_id"`
+	DisplayName   string           `db:"display_name"`
+	CreatedOn     pgtype.Timestamp `db:"created_on"`
 }
 
 func CreateUser(serviceName string, serviceUserId string, serviceDisplayName string) DBUser {
-	var user DBUser
-	err := GetRow(
-		&user,
+	user, err := GetRow[DBUser](
 		`INSERT INTO users (service_name, service_user_id, display_name)
 		 VALUES ($1, $2, $3)
 		 ON CONFLICT (service_name, service_user_id)
@@ -30,9 +28,7 @@ func CreateUser(serviceName string, serviceUserId string, serviceDisplayName str
 }
 
 func GetUser(userId pgtype.UUID) DBUser {
-	var user DBUser
-	err := GetRow(
-		&user,
+	user, err := GetRow[DBUser](
 		`SELECT *
 		 FROM users 
 		 WHERE id = $1`,

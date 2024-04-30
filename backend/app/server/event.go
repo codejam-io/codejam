@@ -8,6 +8,15 @@ import (
 	"net/http"
 )
 
+func (server *Server) GetAllEvents(ctx *gin.Context) {
+	events, err := database.GetEvents()
+	if err == nil {
+		ctx.JSON(http.StatusOK, events)
+	} else {
+		ctx.Status(http.StatusInternalServerError)
+	}
+}
+
 func (server *Server) CreateEvent(ctx *gin.Context) {
 	session := sessions.Default(ctx)
 	userId := session.Get("userId")
@@ -38,6 +47,7 @@ func (server *Server) GetEvent(ctx *gin.Context) {
 func (server *Server) SetupEventRoutes() {
 	group := server.Gin.Group("/event")
 	{
+		group.GET("/", server.GetAllEvents)
 		group.POST("/", server.CreateEvent)
 		group.GET("/:id", server.GetEvent)
 	}
