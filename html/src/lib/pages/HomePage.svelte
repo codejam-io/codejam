@@ -2,7 +2,7 @@
     import '../../styles/styles.css';
 	import Nav from '../components/Nav.svelte';
 	import Banner from '../components/Banner.svelte';
-	import GradientChange from '../components/GradientChange.svelte';
+	//import GradientChange from '../components/GradientChange.svelte';
 	import Card from '../components/Card.svelte';
 	import { activeContent } from '../stores/stores';
 	import Panel from '../components/Panel.svelte';
