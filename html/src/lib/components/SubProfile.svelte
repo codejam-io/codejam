@@ -1,7 +1,7 @@
 <script>
     import Card from "./Card.svelte";
     import BtnCreateTeam from "./BtnCreateTeam.svelte";
-    import CreateTeamForm from "./CreateTeamForm.svelte";
+    //import CreateTeamForm from "./CreateTeamForm.svelte";
     import {userStore, loggedInStore} from "./../stores/stores";
 
 </script>
@@ -13,4 +13,4 @@
     <p>stuff stuff order to participate in the codejam, first order to participate in the codejam, first order to participate in the codejam, first order to participate in the codejam, first  </p>
     <!-- <BtnCreateTeam />  -->
 </div>
-<CreateTeamForm />
+<!-- <CreateTeamForm /> -->
