@@ -1,0 +1,27 @@
+jobs:
+    deploy:
+      name: Deploy Website
+      runs-on: ubuntu-latest
+      steps:
+        - name: Remote deploy
+          uses: appleboy/ssh-action@master
+          with:
+            host: ${{ secrets.SSH_HOST }}
+            key: ${{ secrets.SSH_KEY }}
+            port: ${{ secrets.SSH_PORT }}
+            script: |
+              cd ~/projects/codejam2024/
+              git reset --hard HEAD || true
+              git pull origin main
+              ./build.sh
+              sudo systemctl restart codejam.service
+            username: ${{ secrets.SSH_USER }}
+  
+name: Deploy
+  
+on:
+    workflow_run:
+      workflows: ["Build and publish CodeJam Website"]
+      branches: [main]
+      types:
+        - completed
