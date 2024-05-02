@@ -49,7 +49,7 @@
 
             {#if !loggedIn}
             <Button on:click={login}>
-                <span class="mr-3">Login with Discord</span> <DiscordIcon size="2x"/>
+                <span class="mr-3">LOGIN WITH DISCORD!!!</span> <DiscordIcon size="2x"/>
             </Button>
             {:else}
                 {$userStore?.DisplayName}
