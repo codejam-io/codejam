@@ -9,13 +9,13 @@ jobs:
             host: ${{ secrets.SSH_HOST }}
             key: ${{ secrets.SSH_KEY }}
             port: ${{ secrets.SSH_PORT }}
+            username: ${{ secrets.SSH_USER }}
             script: |
               cd ~/projects/codejam2024/
               git reset --hard HEAD || true
               git pull origin main
-              ./build.sh
+              bash build.sh
               sudo systemctl restart codejam.service
-            username: ${{ secrets.SSH_USER }}
   
 name: Deploy
   
