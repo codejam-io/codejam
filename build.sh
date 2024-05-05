@@ -18,6 +18,7 @@ npm run build
 mkdir -p ../backend/app/server/static_files
 rm -rf ../backend/app/server/static_files/*
 cp -r dist/* ../backend/app/server/static_files/
+cp -r static/ ../backend/app/server/static_files/
 
 echo "Building Backend"
 
