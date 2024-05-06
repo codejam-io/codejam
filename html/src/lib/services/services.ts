@@ -1,5 +1,5 @@
 import {readable} from "svelte/store";
-import {userStore} from "../stores/stores";
+import {eventStore, userStore} from "../stores/stores";
 
 // This shouldn't ever need to be set since dev and prod environments will just use relative endpoints
 export let baseApiUrl : string = "";
@@ -47,5 +47,31 @@ export async function logout() {
         });
 }
 
+export async function getEvent(id: string) {
+    return fetch(baseApiUrl + "/event/" + id)
+        .then((response) => {
+            if (response.status === 401) {
+                userStore.set(null);
+            } else {
+                response.json()
+                    .then((data) => {
+                        if (Array.isArray(data)) {
+                            eventStore.set(data[0]);
+                        } else {
+                            eventStore.set(data);
+                        }
+                    })
+                    .catch((err) => {
+                        console.error("error deserializing event", response, err);
+                    });
+            }
+        });
+}
+
 // Always call at startup to get the initial states
-getUser();
+async function initialLoad() {
+    getUser();
+    getEvent(""); // loads all events
+}
+
+initialLoad();

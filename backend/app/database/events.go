@@ -8,11 +8,11 @@ type DBEvent struct {
 	Title           string           `db:"title"`
 	Description     string           `db:"description"`
 	Rules           string           `db:"rules"`
-	OrganizerUserId pgtype.UUID      `db:"organizer_user_id"`
-	MaxTeams        int              `db:"max_teams"`
-	StartsAt        pgtype.Timestamp `db:"starts_at"`
-	EndsAt          pgtype.Timestamp `db:"ends_at"`
-	CreatedOn       pgtype.Timestamp `db:"created_on"`
+	OrganizerUserId pgtype.UUID      `db:"organizer_user_id" json:"-"`
+	MaxTeams        int              `db:"max_teams" json:"-"`
+	StartsAt        pgtype.Timestamp `db:"starts_at" json:"-"`
+	EndsAt          pgtype.Timestamp `db:"ends_at" json:"-"`
+	CreatedOn       pgtype.Timestamp `db:"created_on" json:"-"`
 }
 
 func CreateEvent(organizerUserId pgtype.UUID) (DBEvent, error) {

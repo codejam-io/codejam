@@ -1,81 +1,38 @@
 <script lang="ts">
-    import '../../styles/styles.css';
-	import Nav from '../components/Nav.svelte';
-	import Banner from '../components/Banner.svelte';
-	//import GradientChange from '../components/GradientChange.svelte';
-	import Card from '../components/Card.svelte';
-	import { activeContent } from '../stores/stores';
-	import Panel from '../components/Panel.svelte';
-	import Content from '../components/Content.svelte';
-    import {Button} from "flowbite-svelte";
-    import DiscordIcon from "../components/DiscordIcon.svelte";
-    import {baseApiUrl, logout} from "../services/services";
-    import {userStore} from "../stores/stores";
-	import { faArrowUpRightFromSquare } from '@fortawesome/free-solid-svg-icons';
-    
-    let loggedIn : boolean = false;
-    
-    userStore.subscribe((value) => {
-        // if value is not null, set loggedIn to True
-        // if value is null (default), set loggedIn to False
-        loggedIn = value != null
-        }
-    )
+	import Page from "../components/Page.svelte";
+	import {eventStore} from "../stores/stores";
 
-    function login() {
-        if (typeof window !== 'undefined') {
-            window.location.assign(baseApiUrl +  '/oauth/redirect');
-        }
-    }
 </script>
 
-
-<div class="flex col">
-	<!-- <GradientChange /> -->
-
-	<!-- <Card /> -->
-
-	<!-- <div class="content">
-        {#if $activeContent === 'goals'}
-        <div class="card">{@html goals}</div>
-        {:else if $activeContent === 'timeline'}
-        <div class="card">{@html timeline}</div>
-        {/if}
-    </div> -->
-
-	<div class="flex row">
-		<div id="left-side" class="flex col">
-			<Banner size="normal" />
-
-            {#if !loggedIn}
-            <Button on:click={login}>
-                <span class="mr-3">LOGIN WITH DISCORD!!!!!!!!!!!!!!!!!!!!!!!!!</span> <DiscordIcon size="2x"/>
-            </Button>
-            {:else}
-                {$userStore?.DisplayName}
-                
-                <Button on:click={logout}>
-                    Logout
-                </Button>
-            {/if}
-
-			
-			<!-- {#if !$loggedIn}
-            <!-- dont need big aesthetic when already logged in -->
-				<Panel />
-			<!-- {/if} --> 
-			<Nav />
-			<Content />
+<Page>
+	<div class="flex panel center row my-8">
+		<div class="panel-text flex col">
+			Ingredients for Codejam:
+			<ul>
+				<li>
+					sugar
+				</li>
+				<li>
+					code
+				</li>
+			</ul>
 		</div>
-		<div id="right-side" class="flex col">
-			<Card />
-			<Card />
+		<div class="flex col">
+			<img src="/static/pinktoasttransparent.png" class="object-contain max-h-72" alt="toast with jam and code on it">
 		</div>
 	</div>
-</div>
 
-<style>
-	#right-side {
-		max-width: 50%;
-	}
-</style>
+	<div id="timeline" class="card !bg-[#ede0fa]">
+		<h3>Timeline</h3>
+		{$eventStore?.Timeline}
+	</div>
+	<div id="goals" class="card !bg-pink-100">
+		<h3>Goals</h3>
+		<pre class="whitespace-pre-wrap">{$eventStore?.Description}</pre>
+	</div>
+	<div id="rules" class="card !bg-[#cee9f3]">
+		<h3>Rules</h3>
+		{$eventStore?.Rules}
+	</div>
+</Page>
+
