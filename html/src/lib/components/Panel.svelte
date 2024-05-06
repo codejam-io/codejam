@@ -35,5 +35,5 @@
             </li>
         </ul>
     </div>
-    <img {src} alt="toast with jam and code on it">
+    <img {src} class="object-contain" alt="toast with jam and code on it">
 </div>
