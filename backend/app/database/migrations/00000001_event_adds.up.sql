@@ -1,1 +1,1 @@
-ALTER TABLE events ADD COLUMN timeline text;
+ALTER TABLE events ADD COLUMN timeline TEXT DEFAULT '';

@@ -7,6 +7,7 @@ CREATE TABLE IF NOT EXISTS users (
     display_name TEXT NOT NULL DEFAULT '',
     created_on TIMESTAMP WITH TIME ZONE DEFAULT (now() AT TIME ZONE('utc'))
 );
+ALTER TABLE users OWNER TO codejam_usr;
 
 CREATE UNIQUE INDEX IF NOT EXISTS idx_service_user ON users (service_name, service_user_id);
 
@@ -22,6 +23,7 @@ CREATE TABLE IF NOT EXISTS events (
     ends_at TIMESTAMP WITH TIME ZONE,
     created_on TIMESTAMP WITH TIME ZONE DEFAULT (now() AT TIME ZONE('utc'))
 );
+ALTER TABLE events OWNER TO codejam_usr;
 
 CREATE TABLE IF NOT EXISTS statuses (
     id SERIAL PRIMARY KEY,
@@ -29,6 +31,7 @@ CREATE TABLE IF NOT EXISTS statuses (
     title TEXT NOT NULL,
     description TEXT NOT NULL
 );
+ALTER TABLE statuses OWNER TO codejam_usr;
 
 INSERT INTO statuses (id, code, title, description) VALUES (1, 'PLANNING', 'Planning', 'Event is not yet live.  The organizer may edit and preview the site but normal users will just see a placeholder page')
 ON CONFLICT (id) DO UPDATE set code = EXCLUDED.code, title = EXCLUDED.title, description = EXCLUDED.description;
