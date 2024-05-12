@@ -64,7 +64,7 @@ isolation: isolate;
 }
 body {
     color: white;
-    font-size: 2rem;
+    font-size: 1rem;
     font-family: "Fira Code", monospace;
     font-optical-sizing: auto;
     font-weight: 400;
@@ -75,7 +75,7 @@ body {
     background: linear-gradient(90deg, rgb(203, 164, 122) 0%, rgb(170, 121, 154) 100%); */
 }
 a {
-    color: white;
+    /*color: white;*/
     text-decoration: None;
 
 }
