@@ -4,7 +4,10 @@
 
 </script>
 
-<div class="flex col px-8">
+<div class="w-full">
     <Header/>
-    <slot/>
+    <div class="flex flex-row justify-center px-8 w-full">
+        <slot/>
+    </div>
 </div>
+

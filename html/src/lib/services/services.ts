@@ -1,5 +1,5 @@
-import {readable} from "svelte/store";
-import {eventStore, userStore} from "../stores/stores";
+import {activeEventStore, eventStatusStore, userStore} from "../stores/stores";
+import CodeJamEvent from "../models/event";
 
 // This shouldn't ever need to be set since dev and prod environments will just use relative endpoints
 export let baseApiUrl : string = "";
@@ -39,7 +39,7 @@ export async function getUser() {
 
 export async function logout() {
     return fetch(baseApiUrl + "/user/logout")
-        .then((response) => {
+        .then(() => {
             userStore.set(null);
         })
         .catch((err) => {
@@ -47,19 +47,17 @@ export async function logout() {
         });
 }
 
-export async function getEvent(id: string) {
-    return fetch(baseApiUrl + "/event/" + id)
+export async function getActiveEvent() {
+    return fetch(baseApiUrl + "/event/active")
         .then((response) => {
             if (response.status === 401) {
                 userStore.set(null);
+            } else if (response.status === 204) {
+                activeEventStore.set(null);
             } else {
                 response.json()
                     .then((data) => {
-                        if (Array.isArray(data)) {
-                            eventStore.set(data[0]);
-                        } else {
-                            eventStore.set(data);
-                        }
+                        activeEventStore.set(data as CodeJamEvent);
                     })
                     .catch((err) => {
                         console.error("error deserializing event", response, err);
@@ -68,10 +66,37 @@ export async function getEvent(id: string) {
         });
 }
 
+export async function getEvents() {
+    return fetch(baseApiUrl + "/event/");
+}
+
+export async function getEvent(id: string) {
+    return fetch(baseApiUrl + "/event/" + id);
+}
+
+export async function putEvent(event: CodeJamEvent) {
+    return await fetch(baseApiUrl + "/event/" + event.Id,
+        {
+            method: "PUT",
+            body: JSON.stringify(event)
+        });
+}
+
+export async function getEventStatuses() {
+    return fetch(baseApiUrl + "/event/statuses")
+        .then((response) => {
+            response.json()
+                .then((data) => {
+                    eventStatusStore.set(data)
+                });
+        })
+}
+
 // Always call at startup to get the initial states
 async function initialLoad() {
     getUser();
-    getEvent(""); // loads all events
+    getActiveEvent();
+    getEventStatuses();
 }
 
 initialLoad();

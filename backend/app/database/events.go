@@ -8,11 +8,19 @@ type DBEvent struct {
 	Title           string           `db:"title"`
 	Description     string           `db:"description"`
 	Rules           string           `db:"rules"`
+	Timeline        string           `db:"timeline"`
 	OrganizerUserId pgtype.UUID      `db:"organizer_user_id" json:"-"`
-	MaxTeams        int              `db:"max_teams" json:"-"`
-	StartsAt        pgtype.Timestamp `db:"starts_at" json:"-"`
-	EndsAt          pgtype.Timestamp `db:"ends_at" json:"-"`
+	MaxTeams        int              `db:"max_teams"`
+	StartsAt        pgtype.Timestamp `db:"starts_at"`
+	EndsAt          pgtype.Timestamp `db:"ends_at"`
 	CreatedOn       pgtype.Timestamp `db:"created_on" json:"-"`
+}
+
+type DBEventStatus struct {
+	Id          int    `db:"id"`
+	Code        string `db:"code"`
+	Title       string `db:"title"`
+	Description string `db:"description"`
 }
 
 func CreateEvent(organizerUserId pgtype.UUID) (DBEvent, error) {
@@ -44,6 +52,17 @@ func GetEvents() ([]DBEvent, error) {
 	return result, err
 }
 
+// GetActiveEvent will return what is assumed to be a single active event.
+func GetActiveEvent() (DBEvent, error) {
+	result, err := GetRow[DBEvent](
+		`SELECT * FROM events
+         WHERE status_id IN (
+           SELECT id FROM statuses WHERE code NOT IN ('PLANNING', 'ENDED') 
+         )
+         LIMIT 1`)
+	return result, err
+}
+
 func UpdateEvent(event DBEvent) (DBEvent, error) {
 	event, err := GetRow[DBEvent](
 		`UPDATE events
@@ -58,4 +77,9 @@ func UpdateEvent(event DBEvent) (DBEvent, error) {
          RETURNING *`,
 		event.Id, event.StatusId, event.Title, event.Description, event.Rules, event.MaxTeams, event.StartsAt, event.EndsAt)
 	return event, err
+}
+
+func GetStatuses() ([]DBEventStatus, error) {
+	statuses, err := GetRows[DBEventStatus](`SELECT * FROM statuses`)
+	return statuses, err
 }
