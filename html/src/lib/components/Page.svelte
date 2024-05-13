@@ -6,7 +6,7 @@
 
 <div class="w-full">
     <Header/>
-    <div class="flex flex-row justify-center px-8 w-full">
+    <div class="flex flex-col items-center px-8 w-full">
         <slot/>
     </div>
 </div>

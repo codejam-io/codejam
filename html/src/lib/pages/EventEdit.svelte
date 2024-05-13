@@ -2,7 +2,7 @@
 
 import Page from "../components/Page.svelte";
 import {onMount} from "svelte";
-import {Button, Card, Input, Select, Spinner, Textarea} from "flowbite-svelte";
+import {Breadcrumb, BreadcrumbItem, Button, Card, Input, Select, Spinner, Textarea} from "flowbite-svelte";
 import {getActiveEvent, getEvent, putEvent} from "../services/services";
 import {eventStatusStore} from "../stores/stores";
 import CodeJamEvent from "../models/event";
@@ -32,14 +32,18 @@ eventStatusStore.subscribe((statuses) => {
     mapStatusOptions(statuses);
 });
 
+let clearErrors : () => {};
+
+let parseResponse : (response: object) => {};
+
 function saveForm() {
     if (formData !== null) {
         isSaving = true;
-        form.clearErrors();
+        clearErrors();
         putEvent(formData)
             .then((response) => {
                 getActiveEvent();
-                form.parseResponse(response);
+                parseResponse(response);
                 response.json()
                     .then(() => {
                         window.location.href = '/#/admin/events';
@@ -72,11 +76,17 @@ onMount(() => {
 
 
 <Page>
+    <Breadcrumb solid class="mb-4 w-full max-w-screen-xl">
+        <BreadcrumbItem href="/#/" home>Home</BreadcrumbItem>
+        <BreadcrumbItem href="/#/admin/events">Manage Events</BreadcrumbItem>
+        <BreadcrumbItem>Edit Event</BreadcrumbItem>
+    </Breadcrumb>
+
     <Card size="xl" class="w-full">
         <h2>Edit Event</h2>
         {#if formData !== null}
             <div class="flex flex-col gap-8 my-8">
-                <Form bind:this={form}>
+                <Form bind:clearErrors={clearErrors} bind:parseResponse={parseResponse}>
                     <FormField name="Status">
                         <Select id="status" items={statusOptions} bind:value={formData.StatusId}></Select>
                     </FormField>
