@@ -1,13 +1,6 @@
 <script lang="ts">
 	import Page from "../components/Page.svelte";
 	import {activeEventStore} from "../stores/stores";
-	import {onMount} from "svelte";
-	import {getEvents} from "../services/services";
-
-
-	onMount(() => {
-		getEvents()
-	})
 
 </script>
 
