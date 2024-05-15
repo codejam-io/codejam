@@ -34,13 +34,13 @@
         })
     }
 
-    export let clearErrors = () => {
+    export const clearErrors = () => {
         fields.forEach((item) => {
             item.errorFunction('');
         })
     }
 
-    export let parseResponse = (response: Response) => {
+    export const parseResponse = (response: Response) => {
         if (response.status === 200) {
             toast.success("Event Saved Successfully!");
         } else {
