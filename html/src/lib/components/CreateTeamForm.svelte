@@ -2,8 +2,10 @@
     import Page from "../components/Page.svelte";
     import FormField from "../components/FormField.svelte";
     import Form from "../components/Form.svelte";
-    import CodejamTeam from "../models/event";
+    import CodeJamTeam from "../models/team";
+    import {getActiveEvent, , putEvent} from "../services/services";
     import { 
+        Card,
         Input, 
         Label, 
         Helper,
@@ -45,6 +47,31 @@
 let formData : CodeJamTeam | null = null;
 let form : Form;
 let isSaving : boolean = false;
+
+let clearErrors : () => {};
+function saveForm() {
+    if (formData !== null) {
+        isSaving = true;
+        clearErrors();
+        putEvent(formData)
+            .then((response) => {
+                getActiveEvent();
+                parseResponse(response);
+                response.json()
+                    .then(() => {
+                        window.location.href = '/#/admin/events';
+                        isSaving = false;
+                    })
+                    .catch(() => {
+                        isSaving = false;
+                    })
+            })
+            .catch((err) => {
+                console.error("Error saving event", err);
+                isSaving = false;
+            });
+    }
+}
     
 </script>
 
