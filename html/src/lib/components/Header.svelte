@@ -4,23 +4,34 @@ import Banner from "./Banner.svelte";
 import {Navbar, NavHamburger, NavLi, NavUl} from "flowbite-svelte";
 import {loggedInStore, userStore} from "../stores/stores";
 import DiscordIcon from "./DiscordIcon.svelte";
+import {location} from "svelte-spa-router";
 
+$: activeUrl = '/#' + $location;
 </script>
+
+
+<style>
+    .active-link {
+            /* Add your styles here */
+            background-color: #f0f0f0; /* Example style */
+        }
+</style>
 
 
 <div class="flex flex-row w-fit pl-8">
     <Banner size="normal" />
     <div class="absolute right-0 top-0">
+        
         <Navbar class="rounded-bl-3xl">
             <NavHamburger/>
-            <NavUl>
+            <NavUl {activeUrl}>
                 <!-- It is important to prefix links with /#/ to prevent reloading of the entire app -->
                 <NavLi href="/#/">Home</NavLi>
                 {#if $loggedInStore}
                     {#if $userStore?.Role === "ADMIN" }
-                         <NavLi href="/#/admin/events">Manage Events</NavLi>
+                    <NavLi href="/#/admin/events">Manage Events</NavLi>
                     {/if}
-                    <NavLi href="/">My Team</NavLi>
+                    <NavLi href="/#/my-team">Sign-Up</NavLi>
                     <NavLi href="/">Profile</NavLi>
                     <NavLi href="/user/logout">Logout</NavLi>
                 {:else}
