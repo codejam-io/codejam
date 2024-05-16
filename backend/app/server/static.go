@@ -31,7 +31,7 @@ func (server *Server) setupInternalStaticRoute() {
 			mimeType = "application/text"
 		}
 
-		ctx.Data(http.StatusOK, mimeType, content)
+		ctx.Data(http.StatusNotModified, mimeType, content)
 	})
 }
 
@@ -52,7 +52,7 @@ func (server *Server) setupProxiedStaticRoute() {
 		contentLength := response.ContentLength
 		contentType := response.Header.Get("Content-Type")
 
-		ctx.DataFromReader(http.StatusOK, contentLength, contentType, reader, nil)
+		ctx.DataFromReader(http.StatusNotModified, contentLength, contentType, reader, nil)
 	})
 }
 
