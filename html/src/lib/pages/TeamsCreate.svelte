@@ -4,7 +4,7 @@
     import {Button, Card} from "flowbite-svelte";
     import {FontAwesomeIcon} from "@fortawesome/svelte-fontawesome";
     import {faPenToSquare} from "@fortawesome/free-solid-svg-icons";
-    import CodeJamEvent from "../models/event";
+    import CodeJamTeam from "../models/team";
     import {onMount} from "svelte";
     import {eventStatusStore} from "../stores/stores";
     import CreateTeamForm from "../components/CreateTeamForm.svelte";
