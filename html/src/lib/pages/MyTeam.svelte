@@ -9,40 +9,11 @@ import {onMount} from "svelte";
 import {eventStatusStore} from "../stores/stores";
 
 
-let events : Array<CodeJamEvent> = new Array<CodeJamEvent>();
+
 let statuses = null
 
-function editEvent(eventId: string) {
-    window.location.href = '/#/admin/event/' + eventId;
-}
 
-function getEventStatus(statusId: number): string {
-    if (statuses) {
-        let event = statuses.find((item) => {
-            return item.Id === statusId;
-        });
-        if (event !== null) {
-            return event.Title;
-        }
-        return '';
-    }
-}
 
-eventStatusStore.subscribe((eventStatuses) => {
-    statuses = eventStatuses;
-});
-
-onMount(() => {
-    getEvents()
-        .then((response) => {
-            if (response.status == 200) {
-                response.json()
-                    .then((data) => {
-                        events = data;
-                    });
-            }
-        });
-});
 
 </script>
 
@@ -50,21 +21,27 @@ onMount(() => {
     
         <Card size="xl" class="w-full">
             <h2>Team Options</h2>
-            <div class="flex flex-col gap-8 my-8">
+            <div class="flex flex-row gap-8 my-8">
             </div>
-    
-            {#each events as event}
-                <Card size="xl">
-                    <div class="flex flex-row w-full gap-2">
-                        <div class="flex grow flex-col">
-                            <span class="text-2xl font-bold">{event.Title}</span>
-                            <span class="">{getEventStatus(event.StatusId)}</span>
-                        </div>
-                        <Button class="bg-blue-500 hover:bg-blue-700" on:click={() => editEvent(event.Id)}>Edit <FontAwesomeIcon class="ml-4" icon={faPenToSquare}/></Button>
-                    </div>
-                </Card>
-            {/each}
-    
+
+            <Card class="my-2" size="xl">
+                <h3>Find a Team to Join</h3>
+                <p class="py-4">Browse other teams looking for members like you! </p>
+                <p class="py-4"><Button href="/#/teams/browse">Browse</Button></p>
+                
+                
+            </Card>
+            <Card class="my-2" size="xl">
+                <h3>Start a Team</h3>
+                <p class="py-4">By creating a team, you're in control of the team page. Decide whether anyone can join or just people with the invite code. </p>
+                <p class="py-4"><Button href="/#/teams/create">Create team</Button></p>
+            </Card>
+            
+            <Card class="my-2" size="xl">
+                <h3>Be a Solo Participant</h3>
+                <p class="py-4">For those who want to work alone. You can change your mind later.</p>
+                <p class="py-4"><Button href="/#/teams/create">Join solo</Button></p>
+            </Card>
         </Card>
     
     </Page>
