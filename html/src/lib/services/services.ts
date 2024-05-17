@@ -1,5 +1,6 @@
 import {activeEventStore, eventStatusStore, userStore} from "../stores/stores";
 import CodeJamEvent from "../models/event";
+import CodeJamTeam from "../models/team";
 
 // This shouldn't ever need to be set since dev and prod environments will just use relative endpoints
 export let baseApiUrl : string = "";
@@ -91,6 +92,15 @@ export async function getEventStatuses() {
                 });
         })
 }
+
+export async function putTeam(team: CodeJamTeam) {
+    return await fetch(baseApiUrl + "/team/" + team.Id,
+        {
+            method: "PUT",
+            body: JSON.stringify(team)
+        });
+}
+
 
 // Always call at startup to get the initial states
 async function initialLoad() {

@@ -3,7 +3,7 @@
     import FormField from "../components/FormField.svelte";
     import Form from "../components/Form.svelte";
     import CodeJamTeam from "../models/team";
-    import {getActiveEvent, , putEvent} from "../services/services";
+    import {getActiveEvent, putTeam} from "../services/services";
     import { 
         Card,
         Input, 
@@ -49,11 +49,13 @@ let form : Form;
 let isSaving : boolean = false;
 
 let clearErrors : () => {};
+let parseResponse : (response: object) => {};
+
 function saveForm() {
     if (formData !== null) {
         isSaving = true;
         clearErrors();
-        putEvent(formData)
+        putTeam(formData)
             .then((response) => {
                 getActiveEvent();
                 parseResponse(response);
