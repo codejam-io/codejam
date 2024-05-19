@@ -57,11 +57,11 @@ function saveForm() {
         clearErrors();
         putTeam(formData)
             .then((response) => {
-                getActiveEvent();
+
                 parseResponse(response);
                 response.json()
                     .then(() => {
-                        window.location.href = '/#/admin/events';
+                        window.location.href = '/#/team/my-team';
                         isSaving = false;
                     })
                     .catch(() => {
@@ -82,8 +82,8 @@ function saveForm() {
     {#if formData !== null}
         <div class="flex flex-col gap-8 my-8">
             <Form bind:clearErrors={clearErrors} bind:parseResponse={parseResponse}>
-                <FormField name="Status">
-                    <Select id="status" items={statusOptions} bind:value={formData.StatusId}></Select>
+                <FormField label="Team Name">
+                    <Select for="Team Name" id="team-name" bind:value={formData.Name}></Select>
                 </FormField>
 
                 <FormField name="Title">

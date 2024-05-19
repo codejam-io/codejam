@@ -87,19 +87,19 @@ onMount(() => {
         {#if formData !== null}
             <div class="flex flex-col gap-8 my-8">
                 <Form bind:clearErrors={clearErrors} bind:parseResponse={parseResponse}>
-                    <FormField name="Status">
+                    <FormField label="Status" name="Status">
                         <Select id="status" items={statusOptions} bind:value={formData.StatusId}></Select>
                     </FormField>
 
-                    <FormField name="Title">
+                    <FormField label="Title" name="Title">
                         <Input bind:value={formData.Title}></Input>
                     </FormField>
 
-                    <FormField name="Description">
+                    <FormField label="Description" name="Description">
                         <Textarea rows=10 bind:value={formData.Description}></Textarea>
                     </FormField>
 
-                    <FormField name="Rules">
+                    <FormField label="Rules" name="Rules">
                         <Textarea rows=10 bind:value={formData.Rules}></Textarea>
                     </FormField>
                 </Form>
