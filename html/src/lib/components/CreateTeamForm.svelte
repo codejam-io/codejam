@@ -41,15 +41,12 @@ let textareaprops = {
     placeholder: "I want to use threejs so I can learn it!"
 };
 
-
 let formData: CodeJamTeam | null = new CodeJamTeam();
 let form: Form;
 let isSaving: boolean = false;
 
 let clearErrors: () => {};
 let parseResponse: (response: object) => {};
-
-
 
 function saveForm() {
     if (formData !== null) {
@@ -89,34 +86,38 @@ function saveForm() {
 //     }
 // })
 </script>
-{$activeEventStore?.Id}
 
 <Card size="xl" class="w-full">
-    <h2>Create your team!</h2>
+
     {#if formData !== null}
         <div class="flex flex-col gap-8 my-8">
             <Form bind:clearErrors={clearErrors} bind:parseResponse={parseResponse}>
 
-                <FormField label="TeamName" name="TeamName">
+                <FormField label="Team Name:" name="TeamName">
                     <Input bind:value={formData.Name}></Input>
                 </FormField>
+                <div>
+                    <Radio name="team-type" bind:group={formData.Visibility} value="public">Public Team</Radio>
+                    <Helper class="ml-6 ">(If you want your team to be searchable)</Helper>
+                </div>
+                <div>
+                    <Radio name="team-type" bind:group={formData.Visibility} value="private">Private Team</Radio>
+                    <Helper class="ml-6">(Your team will be invite only)</Helper>
+                </div>
 
-                <Radio name="team-type" bind:group={formData.Visibility} value="public">Public Team</Radio>
-                <Helper class="ml-6">(If you want your team to be searchable)</Helper>
-                <Radio name="team-type" bind:group={formData.Visibility} value="private">Private Team</Radio>
-                <Helper class="ml-6">(Your team will be invite only)</Helper>
-
-                <FormField label="TeamAvailability" name="TeamAvailability">
+                <FormField label="Your general availability:" name="TeamAvailability">
                     <Input bind:value={formData.Availability} placeholder="example: weekends, mon (1-2pm)"></Input>
                 </FormField>
 
                 <!-- <MultiSelect id="multi-close" items={languages} bind:value={formData.Technologies} /> -->
-                <FormField label="TeamTechnologies" name="TeamTechnologies">
-                    <Input bind:value={formData.Technologies} placeholder="python, nextjs, django, sql"></Input>
+                <FormField label="Your technologies:" name="TeamTechnologies">
+                    <Input bind:value={formData.Technologies} placeholder="example: python, nextjs, django, sql"></Input>
                 </FormField>
 
-                <Label for="aboutTextArea">What do you want out of this team?</Label>
-                <Textarea {...textareaprops} bind:value={formData.Description} />
+                <FormField label="What do you want out of this team?" name="Description">
+                <!-- <Label for="aboutTextArea">What do you want out of this team?</Label> -->
+                    <Textarea {...textareaprops} bind:value={formData.Description} />
+                </FormField>
             </Form>
             
 
