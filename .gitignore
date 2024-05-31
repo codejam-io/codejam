@@ -6,3 +6,6 @@
 
 # Config files...
 config.toml
+
+# docker related files
+docker-compose.override.yaml
