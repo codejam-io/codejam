@@ -11,15 +11,15 @@ import Form from "../components/Form.svelte";
 
 export let params : any; // set by svelte-spa-router
 
-let statusOptions = [];
+let statusOptions: any = [];
 let formData : CodeJamEvent | null = null;
 let form : Form;
 let isSaving : boolean = false;
 
 /* Convert the API statuses to Select options */
-function mapStatusOptions(statuses) {
+function mapStatusOptions(statuses: any) {
     if (statuses) {
-        statusOptions = statuses.map((status) => {
+        statusOptions = statuses.map((status: any) => {
             return {
                 name: status.Title,
                 value: status.Id
@@ -60,6 +60,7 @@ function saveForm() {
     }
 }
 
+// this returns the event form with prefilled information
 onMount(() => {
     if (params) {
         getEvent(params.id)
