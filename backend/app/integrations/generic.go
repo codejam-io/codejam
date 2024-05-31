@@ -5,6 +5,7 @@ import (
 	"codejam.io/integrations/github"
 	"codejam.io/logging"
 	"strings"
+	"encoding/json"
 )
 
 var logger = logging.NewLogger(logging.Options{Name: "Integrations", Level: logging.DEBUG})
@@ -23,7 +24,7 @@ func getGitHubUser(accessToken string) *IntegrationUser {
 	} else {
 		return &IntegrationUser{
 			IntegrationName: "github",
-			UserId:          user["id"].(string),
+			UserId:          string(user["id"].(json.Number)),
 		}
 	}
 }
