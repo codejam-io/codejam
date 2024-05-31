@@ -1,116 +1,124 @@
 <script lang="ts">
-    import Page from "../components/Page.svelte";
-    import FormField from "../components/FormField.svelte";
-    import Form from "../components/Form.svelte";
-    import CodeJamTeam from "../models/team";
-    import { getActiveEvent, putTeam } from "../services/services";
-    import { 
-        Card,
-        Input, 
-        Label, 
-        Helper,
-        Radio, 
-        Textarea,
-        MultiSelect,
-        Button,
-        Spinner 
-    } from 'flowbite-svelte';
-    
-    interface Selections {
-        value: string,
-        name: string;
+import Page from "../components/Page.svelte";
+import FormField from "../components/FormField.svelte";
+import Form from "../components/Form.svelte";
+import {onMount} from "svelte";
+import CodeJamTeam from "../models/team";
+import {activeEventStore} from "../stores/stores";
+import { getActiveEvent, postTeam, getTeam } from "../services/services";
+import { 
+    Card,
+    Input, 
+    Label, 
+    Helper,
+    Radio, 
+    Textarea,
+    MultiSelect,
+    Button,
+    Spinner 
+} from 'flowbite-svelte';
+
+interface Selections {
+    value: string,
+    name: string;
+}
+
+let selectedLangs: Selections[] = [];
+let languages: Selections[] = [
+    { value: 'py', name: 'Python'},
+    { value: 'ph', name: 'PHP'},
+    { value: 'js', name: 'JavaScript'},
+    { value: 'ts', name: 'TypeScript'}, 
+    { value: 'go', name: 'Go'}
+];
+let languageValues: string[] = [];
+
+let textareaprops = {
+    id: 'aboutTextArea',
+    name: 'message',
+    label: 'What do you want out of this team:',
+    rows: 4,
+    placeholder: "I want to use threejs so I can learn it!"
+};
+
+
+let formData: CodeJamTeam | null = new CodeJamTeam();
+let form: Form;
+let isSaving: boolean = false;
+
+let clearErrors: () => {};
+let parseResponse: (response: object) => {};
+
+
+
+function saveForm() {
+    if (formData !== null) {
+        isSaving = true;
+        clearErrors();
+        
+        formData.EventId = $activeEventStore?.Id || ""
+        // Step 1: Post Team Data API
+        postTeam(formData)
+            .then((response) => {
+                parseResponse(response);
+                response.json()
+                    .then(() => {
+                        window.location.href = '/#/team/my-team';
+                        isSaving = false;
+                    })
+                    .catch(() => {
+                        isSaving = false;
+                    });
+            })
+            .catch((err) => {
+                console.error("Error saving event", err);
+                isSaving = false;
+            });
     }
-    
-    let selectedLangs: Selections[] = [];
-    let languages: Selections[] = [
-        { value: 'py', name: 'Python'},
-        { value: 'ph', name: 'PHP'},
-        { value: 'js', name: 'JavaScript'},
-        { value: 'ts', name: 'TypeScript'}, 
-        { value: 'go', name: 'Go'}
-    ];
-    let languageValues: string[] = [];
-    
-    let selectedTZ: Selections[] = [];
-    let listTZ: Selections[] = [
-        { value: 'PST', name: 'PST -0700'},
-        { value: 'MST', name: 'MST -0600'},
-        { value: 'EST', name: 'EST -0400'},
-    ];
-    let tzValues: string[] = [];
-    let textareaprops = {
-        id: 'message',
-        name: 'message',
-        label: 'What do you want out of this team:',
-        rows: 4,
-        placeholder: "I want to use threejs so I can learn it!"
-    };
+}
 
-    let formData: CodeJamTeam | null = null;
-    let form: Form;
-    let isSaving: boolean = false;
-
-    let clearErrors: () => void;
-    let parseResponse: (response: object) => void;
-
-    async function loadFormData() {
-        try {
-            const event = await getActiveEvent();
-            formData = new CodeJamTeam(event);
-        } catch (err) {
-            console.error("Error fetching active event", err);
-        }
-    }
-
-    function saveForm() {
-        if (formData !== null) {
-            isSaving = true;
-            clearErrors();
-            putTeam(formData)
-                .then((response) => {
-                    parseResponse(response);
-                    response.json()
-                        .then(() => {
-                            window.location.href = '/#/team/my-team';
-                            isSaving = false;
-                        })
-                        .catch(() => {
-                            isSaving = false;
-                        });
-                })
-                .catch((err) => {
-                    console.error("Error saving event", err);
-                    isSaving = false;
-                });
-        }
-    }
-
-    loadFormData();
+// onMount(() => {
+//     if (params) {
+//         getTeam(params.id)
+//             .then((response) => {
+//                 response.json()
+//                     .then((data) => {
+//                         formData = data as CodeJamTeam;
+//                     })
+//             });
+//     }
+// })
 </script>
+{$activeEventStore?.Id}
 
 <Card size="xl" class="w-full">
     <h2>Create your team!</h2>
     {#if formData !== null}
         <div class="flex flex-col gap-8 my-8">
-            <div class="flex flex-col gap-5">
-                <Label for="team-name">Team Name</Label>
-                <Input id="team-name" placeholder="Team Name:" bind:value={formData.name} />
+            <Form bind:clearErrors={clearErrors} bind:parseResponse={parseResponse}>
 
-                <br>
-                <Radio name="team-type" bind:group={formData.teamType} value="public">Public Team</Radio>
+                <FormField label="TeamName" name="TeamName">
+                    <Input bind:value={formData.Name}></Input>
+                </FormField>
+
+                <Radio name="team-type" bind:group={formData.Visibility} value="public">Public Team</Radio>
                 <Helper class="ml-6">(If you want your team to be searchable)</Helper>
-                <Radio name="team-type" bind:group={formData.teamType} value="private">Private Team</Radio>
+                <Radio name="team-type" bind:group={formData.Visibility} value="private">Private Team</Radio>
                 <Helper class="ml-6">(Your team will be invite only)</Helper>
 
-                <MultiSelect id="multi-close" items={languages} bind:value={languageValues} />
+                <FormField label="TeamAvailability" name="TeamAvailability">
+                    <Input bind:value={formData.Availability} placeholder="example: weekends, mon (1-2pm)"></Input>
+                </FormField>
 
-                <MultiSelect items={listTZ} bind:value={tzValues} />
-                <Label for="tzInput">General Availability:</Label>
-                <Input id="tzInput" bind:value={formData.availability} />
+                <!-- <MultiSelect id="multi-close" items={languages} bind:value={formData.Technologies} /> -->
+                <FormField label="TeamTechnologies" name="TeamTechnologies">
+                    <Input bind:value={formData.Technologies} placeholder="python, nextjs, django, sql"></Input>
+                </FormField>
 
                 <Label for="aboutTextArea">What do you want out of this team?</Label>
-                <Textarea id="aboutTextArea" {...textareaprops} bind:value={formData.message} />
-            </div>
+                <Textarea {...textareaprops} bind:value={formData.Description} />
+            </Form>
+            
 
             <Button on:click={saveForm} disabled={isSaving}>
                 {#if isSaving}

@@ -5,22 +5,18 @@ import "github.com/jackc/pgx/v5/pgtype"
 type DBTeam struct {
 	Id              pgtype.UUID      `db:"id"`
 	EventId         pgtype.UUID      `db:"event_id"`
-	OwnerUserId     pgtype.UUID      `db:"owner_user_id"`
+	OwnerUserId     pgtype.UUID      `db:"owner_user_id" json:"-"`
 	Name            string           `db:"name"`
 	Visibility      string           `db:"visibility"`
 	Timezone        string           `db:"timezone"`
 	Technologies    string           `db:"technologies"`
 	Availability    string           `db:"availability"`
 	Description 	string 			 `db:"description"`
-	CreatedOn       pgtype.Timestamp `db:"created_on"`
-}
-
-type CreateTeamRequest struct {
-	// maybe for server/teams.go
+	CreatedOn       pgtype.Timestamp `db:"created_on" json:"-"`
 
 }
-func CreateTeam(ownerUserId pgtype.UUID) (DBTeam, error) {
-	var team DBTeam
+
+func CreateTeam(team DBTeam) (DBTeam, error) {
 	team, err := GetRow[DBTeam](
 		`INSERT INTO teams
             (event_id, owner_user_id, name, visibility, timezone, technologies, availability, description)
@@ -28,7 +24,7 @@ func CreateTeam(ownerUserId pgtype.UUID) (DBTeam, error) {
 			($1, $2, $3, $4, $5, $6, $7, $8)
          RETURNING *
 		`,
-		ownerUserId)
+		team.EventId, team.OwnerUserId, team.Name, team.Visibility, team.Timezone, team.Technologies, team.Availability, team.Description)
 	return team, err
 }
 

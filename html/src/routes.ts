@@ -12,5 +12,5 @@ export default {
     '/admin/event/:id': EventEdit,
     '/my-team': MyTeam,
     '/teams/browse': TeamsBrowse,
-    '/teams/create': TeamsCreate
+    '/teams/create': TeamsCreate,
 }

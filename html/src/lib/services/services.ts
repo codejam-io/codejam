@@ -93,14 +93,19 @@ export async function getEventStatuses() {
         })
 }
 
-export async function putTeam(team: CodeJamTeam) {
-    return await fetch(baseApiUrl + "/team/" + team.Id,
+export async function postTeam(team: CodeJamTeam) {
+    // Step 2: Post Team Data API (accepts formData(CodeJamTeam) as argument)
+    return await fetch(baseApiUrl + "/team/",
+    // formData turned into JSON and sent via POST, retreived at CreateTeam(ctx *gin.Context)
         {
-            method: "PUT",
+            method: "POST",
             body: JSON.stringify(team)
         });
 }
 
+export async function getTeam(id: string) {
+    return fetch(baseApiUrl + "/team/" + id);
+}
 
 // Always call at startup to get the initial states
 async function initialLoad() {
