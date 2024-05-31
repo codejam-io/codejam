@@ -60,6 +60,7 @@ function saveForm() {
                 parseResponse(response);
                 response.json()
                     .then(() => {
+                        // Stepp 1: GET team info
                         window.location.href = '/#/team/my-team';
                         isSaving = false;
                     })

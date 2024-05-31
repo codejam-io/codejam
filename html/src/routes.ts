@@ -1,7 +1,7 @@
 import HomePage from "./lib/pages/HomePage.svelte";
 import EventEdit from "./lib/pages/EventEdit.svelte";
 import EventList from "./lib/pages/EventList.svelte";
-import MyTeam from "./lib/pages/MyTeam.svelte";
+import TeamOptions from "./lib/pages/TeamOptions.svelte";
 import TeamsBrowse from "./lib/pages/TeamsBrowse.svelte";
 import TeamsCreate from "./lib/pages/TeamsCreate.svelte";
 
@@ -10,7 +10,7 @@ export default {
     '/home': HomePage,
     '/admin/events': EventList,
     '/admin/event/:id': EventEdit,
-    '/my-team': MyTeam,
+    '/team': TeamOptions,
     '/teams/browse': TeamsBrowse,
     '/teams/create': TeamsCreate,
 }

@@ -13,7 +13,7 @@ import {eventStatusStore} from "../stores/stores";
 let statuses = null
 
 
-
+// Stepp 2: GET team info
 
 </script>
 
