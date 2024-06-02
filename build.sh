@@ -26,17 +26,16 @@ cd ../backend/app || return
 go build
 
 if [ -e codejam.io ]; then
-  if [ -e /opt/codejam/codejam.io ]; then
-    rm /opt/codejam/codejam.io
+  if [ -e /opt/codejam/staging/codejam.io ]; then
+    rm /opt/codejam/staging/codejam.io
   else
     echo "WARNING: Existing deployment not found"
   fi
 
-  cp codejam.io /opt/codejam/codejam.io
+  cp codejam.io /opt/codejam/staging/codejam.io
 else
   echo -e "\e[92mBackend Build Failed: missing binary file found\e[0m"
   exit 1
 fi
 
 echo -e "\e[32mSuccess\e[0m"
-
