@@ -16,7 +16,7 @@ jobs:
               git reset --hard HEAD || true
               git pull origin main
               ./build.sh
-              sudo systemctl restart codejam.service
+              sudo systemctl restart codejam-staging.service
   
 name: Deploy
   
