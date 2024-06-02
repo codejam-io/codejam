@@ -1,0 +1,23 @@
+jobs:
+    deploy:
+      name: Deploy Prod Release
+      runs-on: ubuntu-latest
+      steps:
+        - name: Remote deploy
+          uses: appleboy/ssh-action@master
+          with:
+            host: ${{ secrets.SSH_HOST }}
+            key: ${{ secrets.SSH_KEY }}
+            port: ${{ secrets.SSH_PORT }}
+            username: ${{ secrets.SSH_USER }}
+            script: |
+              source ~/.bash_profile
+              sudo systemctl stop codejam-prod.service
+              sudo cp /opt/codejam/staging/codejam.io /opt/codejam/prod/
+              sudo systemctl start codejam-prod.service
+  
+name: Release
+  
+on:
+    release:
+        types: [published]
