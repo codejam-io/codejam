@@ -33,12 +33,28 @@
         <Card>
             {#if teamData !== null}
             
+            <center>
+                <b>Team {teamData?.Name}</b>
+            </center>
             <span>
-                <b>Team Name: </b>{teamData?.Name}
+                <b>Owner: </b>{teamData?.OwnerDisplayName}
+            </span>
+
+            <!--TODO: the the Event name and the Owner's name-->
+            <span>
+                <b>Visibility: </b>{teamData?.Visibility}
             </span>
             <span>
-                <b> Team Visibility: </b>{teamData?.Visibility}
+                <b>Technologies: </b>{teamData?.Technologies}
             </span>
+            <span>
+                <b>Availability: </b>{teamData?.Availability}
+            </span>
+            <span>
+                <b>Description: </b>{teamData?.Description}
+            </span>
+
+
             
                 
             {/if}

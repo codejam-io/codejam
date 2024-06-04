@@ -32,31 +32,31 @@ func (server *Server) GetAllTeams(ctx *gin.Context) {
 	}
 }
 
+// stepp 4: GET team info
 func (server *Server) GetTeam(ctx *gin.Context) {
 	id := ctx.Param("id")
 	team, err := database.GetTeam(convert.StringToUUID(id))
 	if err == nil {
 		ctx.JSON(http.StatusOK, team)
 	} else {
-		logger.Error("GetEvent error: %v", err)
+		logger.Error("GetTeam error: %v", err)
 		ctx.Status(http.StatusInternalServerError)
 	}
 }
 
 func (server *Server) CreateTeam(ctx *gin.Context) {
-	// ctx argument with type *gin.Context has the HTTP post information. 
+	// ctx of *gin.Context has HTTP request info. 
 	// Step 4: Post Team Data API
 	session := sessions.Default(ctx)
 	userId := session.Get("userId")
 	if userId != nil {
 		// declare type team
-
+		fmt.Println("------------line 54 CTX: ", ctx)
 		var team database.DBTeam
 		var teamReq CreateTeamRequest
-		//event_id = convert.StringToUUID(ctx.EventId.string())	
 		
 		// shouldbindJSON binds the POST-req-JSON-info to the provided structure in ()
-		// err should be <nil> if there are no errors (this is a context feature), otherwise -> line 60
+		// err should be <nil> (ctx feature)
 		err := ctx.ShouldBindJSON(&teamReq)
 		fmt.Println(teamReq, "==", err)
 
@@ -76,15 +76,16 @@ func (server *Server) CreateTeam(ctx *gin.Context) {
 		team.Technologies = teamReq.Technologies
 		team.Timezone = teamReq.Timezone
 
-		fmt.Printf("%+v",teamReq) 
-		//{EventId:28247e11-319e-4f56-8200-3e6366b79f04 Name:jarvie Visibility: Availability:sometimes Description:im shy}[GIN]
-
 		team, err = database.CreateTeam(team)
-		fmt.Printf("%+v", team)
-
+		// fmt.Printf("%+v", team)
+		
+		teamId := convert.UUIDToString(team.Id)
 		if err == nil {
-			ctx.JSON(http.StatusOK, team)
+
+			//TODO: remove localhost:8080 with dynamic URL
+			ctx.Redirect(http.StatusFound, fmt.Sprintf("http://localhost:8080/team/%s", teamId))
 		} else {
+			fmt.Println(err)
 			logger.Error("CreateTeam error: %v for user %s", err, userId)
 			ctx.Status(http.StatusInternalServerError)
 		}

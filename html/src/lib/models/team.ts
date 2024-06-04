@@ -9,6 +9,7 @@ class CodeJamTeam {
     Technologies: string;
     Availability: string;
     Description: string;
+    OwnerDisplayName: string;
 
     constructor() {
         this.Id = '';
@@ -19,6 +20,7 @@ class CodeJamTeam {
         this.Technologies = '';
         this.Availability = '';
         this.Description = '';
+        this.OwnerDisplayName = '';
     }
 }
 
