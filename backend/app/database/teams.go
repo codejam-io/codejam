@@ -28,8 +28,9 @@ func CreateTeam(team DBTeam) (DBTeam, error) {
 	return team, err
 }
 
-func GetTeam(teamId pgtype.UUID) (DBEvent, error) {
-	team, err := GetRow[DBEvent](
+// stepp 5: api get team info
+func GetTeam(teamId pgtype.UUID) (DBTeam, error) {
+	team, err := GetRow[DBTeam](
 		`SELECT * FROM teams WHERE id = $1`,
 		teamId)
 	return team, err

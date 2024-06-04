@@ -95,7 +95,7 @@ export async function getEventStatuses() {
 
 export async function postTeam(team: CodeJamTeam) {
     // Step 2: Post Team Data API (accepts formData(CodeJamTeam) as argument)
-    return await fetch(baseApiUrl + "/team/",
+    return await fetch(baseApiUrl + "/team/" + team.Id,
     // formData turned into JSON and sent via POST, retreived at CreateTeam(ctx *gin.Context)
         {
             method: "POST",
@@ -104,6 +104,8 @@ export async function postTeam(team: CodeJamTeam) {
 }
 
 export async function getTeam(id: string) {
+    // stepp 3 pt 1: 
+    console.log(id)
     return fetch(baseApiUrl + "/team/" + id);
 }
 

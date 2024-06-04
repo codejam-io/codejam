@@ -58,10 +58,13 @@ function saveForm() {
         postTeam(formData)
             .then((response) => {
                 parseResponse(response);
+                const url = new URL(response.url);
+                const pathSegments = url.pathname.split('/');
+                const teamId = pathSegments[pathSegments.length - 1];
                 response.json()
                     .then(() => {
                         // Stepp 1: GET team info
-                        window.location.href = '/#/team/my-team';
+                        window.location.href = '/#/team/' + teamId
                         isSaving = false;
                     })
                     .catch(() => {
@@ -75,17 +78,7 @@ function saveForm() {
     }
 }
 
-// onMount(() => {
-//     if (params) {
-//         getTeam(params.id)
-//             .then((response) => {
-//                 response.json()
-//                     .then((data) => {
-//                         formData = data as CodeJamTeam;
-//                     })
-//             });
-//     }
-// })
+
 </script>
 
 <Card size="xl" class="w-full">

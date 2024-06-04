@@ -6,6 +6,7 @@ import {loggedInStore, userStore} from "../stores/stores";
 import DiscordIcon from "./DiscordIcon.svelte";
 import {location} from "svelte-spa-router";
 
+// reactive statement - "location" will change whenever url changes 
 $: activeUrl = '/#' + $location;
 </script>
 
@@ -31,7 +32,7 @@ $: activeUrl = '/#' + $location;
                     {#if $userStore?.Role === "ADMIN" }
                     <NavLi href="/#/admin/events">Manage Events</NavLi>
                     {/if}
-                    <NavLi href="/#/my-team">Sign-Up</NavLi>
+                    <NavLi href="/#/team">Sign-Up</NavLi>
                     <NavLi href="/">Profile</NavLi>
                     <NavLi href="/user/logout">Logout</NavLi>
                 {:else}
