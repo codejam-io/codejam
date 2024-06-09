@@ -105,7 +105,8 @@ export async function postTeam(team: CodeJamTeam) {
 
 export async function getTeam(id: string) {
     // stepp 3 pt 1: 
-    console.log(id)
+    // goes to server/getTeam ctx
+    console.log("team id from getTeam/services.ts:", id)
     return fetch(baseApiUrl + "/team/" + id);
 }
 

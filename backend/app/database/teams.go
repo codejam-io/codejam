@@ -7,7 +7,6 @@ import (
 type DBTeam struct {
 	Id              pgtype.UUID      `db:"id"`
 	EventId         pgtype.UUID      `db:"event_id"`
-	OwnerUserId     pgtype.UUID      `db:"owner_user_id" json:"ownerUserId-hidden"`
 	Name            string           `db:"name"`
 	Visibility      string           `db:"visibility"`
 	Timezone        string           `db:"timezone"`
@@ -15,23 +14,33 @@ type DBTeam struct {
 	Availability    string           `db:"availability"`
 	Description 	string 			 `db:"description"`
 	CreatedOn       pgtype.Timestamp `db:"created_on" json:"createdOn-hidden"`
-	OwnerName	    *OwnerName		 `db:"display_name, omitempty" json:"-"` // this references the User struct
 }
 
-type OwnerName struct {
-    DisplayName string `db:"display_name, omitempty"`
+// has all the user info & role to pass to be read client-side
+type DBTeamMemberInfo struct { 
+	DBUser	 // embed the DBUser fields into the struct
+    Role 	string	 `db:"role"` 
 }
 
-func CreateTeam(team DBTeam) (DBTeam, error) {
+// For team_member table.
+type DBTeamMember struct {
+	Id 			pgtype.UUID 		`db:"id"`
+	TeamId		pgtype.UUID			`db:"team_id"`
+	userId		pgtype.UUID     	`db:"user_id"`
+	Role 		string				`db:"role"`
+	CreatedOn	pgtype.Timestamp	`db:"created_on" json:"createdOn-hidden"`
+}
+
+func CreateTeam(team DBTeam) (pgtype.UUID, error) {
 	team, err := GetRow[DBTeam](
 		`INSERT INTO teams
-            (event_id, owner_user_id, name, visibility, timezone, technologies, availability, description)
+            (event_id, name, visibility, timezone, technologies, availability, description)
             VALUES
-			($1, $2, $3, $4, $5, $6, $7, $8)
-        RETURNING id, event_id, owner_user_id, name, visibility, timezone, technologies, availability, description, created_on
+			($1, $2, $3, $4, $5, $6, $7)
+        RETURNING id, event_id, name, visibility, timezone, technologies, availability, description, created_on
 		`,
-		team.EventId, team.OwnerUserId, team.Name, team.Visibility, team.Timezone, team.Technologies, team.Availability, team.Description)
-	return team, err
+		team.EventId, team.Name, team.Visibility, team.Timezone, team.Technologies, team.Availability, team.Description)
+	return team.Id, err
 }
 
 // stepp 5: api get team info
@@ -40,17 +49,14 @@ func GetTeam(teamId pgtype.UUID) (DBTeam, error) {
 		`SELECT 
 			teams.id,
 			teams.event_id,
-			teams.owner_user_id,
 			teams.name,
 			teams.visibility,
 			teams.timezone,
 			teams.technologies,
 			teams.availability,
 			teams.description,
-			teams.created_on,
-			users.display_name
+			teams.created_on
 		FROM teams
-		LEFT JOIN users ON teams.owner_user_id = users.id
 		WHERE teams.id = $1`,
 		teamId)
 		// `SELECT * FROM teams WHERE id = $1`,
@@ -79,4 +85,26 @@ func UpdateTeam(team DBTeam) (DBTeam, error) {
 		RETURNING *`,
 		team.Id, team.Name, team.Visibility, team.Timezone, team.Technologies, team.Availability, team.Description)
 	return event, err
+}
+
+func AddTeamMember(userId pgtype.UUID, teamUUID pgtype.UUID) (error) {
+
+	// _, err := GetRow[DBTeamMember](
+	// 	`INSERT userID,  INTO team_members
+
+	// 	`
+	// )
+	return nil
+}
+
+func GetMembersByTeamId(teamId pgtype.UUID) (*[]DBTeamMemberInfo, error) {
+	members, err := GetRows[DBTeamMemberInfo](
+		// select all the info of a user (a user row) and their tm.role ()
+		`SELECT u.*, tm.role
+		FROM team_members tm
+		INNER JOIN users u on (u.id = tm.user_id)
+		WHERE tm.team_id = $1`, 
+		teamId)
+	return &members, err
+
 }

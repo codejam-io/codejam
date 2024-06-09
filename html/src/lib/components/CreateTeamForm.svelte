@@ -5,7 +5,7 @@ import Form from "../components/Form.svelte";
 import {onMount} from "svelte";
 import CodeJamTeam from "../models/team";
 import {activeEventStore} from "../stores/stores";
-import { getActiveEvent, postTeam, getTeam } from "../services/services";
+import { getActiveEvent, postTeam } from "../services/services";
 import { 
     Card,
     Input, 
@@ -57,14 +57,17 @@ function saveForm() {
         // Step 1: Post Team Data API
         postTeam(formData)
             .then((response) => {
-                parseResponse(response);
-                const url = new URL(response.url);
-                const pathSegments = url.pathname.split('/');
-                const teamId = pathSegments[pathSegments.length - 1];
+                // parseResponse(response);
+                // const url = new URL(response.url);
+                // const pathSegments = url.pathname.split('/');
+                // const teamId = pathSegments[pathSegments.length - 1];
                 response.json()
-                    .then(() => {
+                    .then((data) => {
+                        console.log(data.id)
+
                         // Stepp 1: GET team info
-                        window.location.href = '/#/team/' + teamId
+                        // this uses routes.ts --> MyTeam.svelte page
+                        window.location.href = '/#/team/' + data.id
                         isSaving = false;
                     })
                     .catch(() => {

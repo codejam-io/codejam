@@ -5,10 +5,12 @@
     import CodeJamTeam from '../models/team';
     import {getTeam} from "../services/services"
     import { Label, Input } from "flowbite-svelte";
+	import type TeamMember from "../models/TeamMember";
 
     export let params: any; // set by svelte-spa-router
 
     let teamData: CodeJamTeam | null = null;
+    let teamMembers: TeamMember | null = null;
     console.log("params: ", params)
 
     async function loadData(id: string) {
@@ -16,7 +18,9 @@
                 console.log("line 17print: ", params.id, "== response: ", response)
                 response.json().then((data: any) => {
                     console.log("line 19 data: ", data)
-                    teamData = data as CodeJamTeam;
+                    teamData = data.Team as CodeJamTeam;
+                    console.log(teamData)
+                    teamMembers = data[2] as TeamMember
                 });
             }); 
     }
@@ -34,10 +38,15 @@
             {#if teamData !== null}
             
             <center>
-                <b>Team {teamData?.Name}</b>
+                <b>Team {teamData.Name}</b>
             </center>
-            <span>
-                <b>Owner: </b>{teamData?.OwnerDisplayName}
+            <span><b>Team Members: </b>
+                <ul>
+                    <!-- {#each teamData.Members as {DisplayName}}
+                        <li>{DisplayName} </li>
+                    {/each} -->
+                </ul>
+                
             </span>
 
             <!--TODO: the the Event name and the Owner's name-->
