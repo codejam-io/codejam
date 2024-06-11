@@ -6,21 +6,28 @@
     import {getTeam} from "../services/services"
     import { Label, Input } from "flowbite-svelte";
 	import type TeamMember from "../models/TeamMember";
+    import CodeJamEvent from "../models/event";
 
     export let params: any; // set by svelte-spa-router
 
     let teamData: CodeJamTeam | null = null;
-    let teamMembers: TeamMember | null = null;
+    let teamMembers: TeamMember | Array<any>; 
+    let teamEvent: CodeJamEvent | null = null;
     console.log("params: ", params)
+
+
+    // getTeam here returns an Object with {Team (CodeJamTeam), Event, Members(TeamMember)}
+    // Am I getting Members and Events info from GEtTeamInfo or from... 
 
     async function loadData(id: string) {
         getTeam(params.id).then((response: any) => {
                 console.log("line 17print: ", params.id, "== response: ", response)
                 response.json().then((data: any) => {
-                    console.log("line 19 data: ", data)
+                    console.log(data)
                     teamData = data.Team as CodeJamTeam;
-                    console.log(teamData)
-                    teamMembers = data[2] as TeamMember
+                    teamMembers = data.Members
+                    console.log("team members:", teamMembers)
+                    teamEvent = data.Event as CodeJamEvent
                 });
             }); 
     }
@@ -36,15 +43,15 @@
         hi
         <Card>
             {#if teamData !== null}
-            
+            {teamEvent?.Title}
             <center>
                 <b>Team {teamData.Name}</b>
             </center>
             <span><b>Team Members: </b>
                 <ul>
-                    <!-- {#each teamData.Members as {DisplayName}}
-                        <li>{DisplayName} </li>
-                    {/each} -->
+                    {#each teamMembers as member}
+                        <li>{member.DisplayName} </li>
+                    {/each}
                 </ul>
                 
             </span>
@@ -62,10 +69,6 @@
             <span>
                 <b>Description: </b>{teamData?.Description}
             </span>
-
-
-            
-                
             {/if}
             
             

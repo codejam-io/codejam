@@ -38,7 +38,8 @@ func (server *Server) GetAllTeams(ctx *gin.Context) {
 	}
 }
 
-// stepp 4: GET team info
+// stepp 4: GET team info 
+// purpose is to construct the DBTeamMemberInfo
 func (server *Server) GetTeamInfo(ctx *gin.Context) {
 	id := convert.StringToUUID(ctx.Param("id"))
 
@@ -73,8 +74,6 @@ func (server *Server) GetTeamInfo(ctx *gin.Context) {
 	teamResponse.Event = &event
 	teamResponse.Members = members
 
-	fmt.Println("LINE 75========server/teams/getteammembers== TEAMM MEMBERS:", teamResponse.Members)
-
 	ctx.JSON(http.StatusOK, teamResponse)
 }
 
@@ -90,6 +89,7 @@ func (server *Server) CreateTeam(ctx *gin.Context) {
 
 	var team database.DBTeam
 	var teamReq CreateTeamRequest
+	// var tempMember CreateTeamMember
 
 	// shouldbindJSON binds the POST-req-JSON-info to the provided structure in ()
 	// err should be <nil> (ctx feature)
@@ -119,7 +119,11 @@ func (server *Server) CreateTeam(ctx *gin.Context) {
 		return
 	}
 	// PART 2/2 DONE
-	err = database.AddTeamMember(convert.StringToUUID(strUserId), teamUUID)
+	// construct TeamMember
+	// tempMember.Role = "owner"
+	// tempMember.TeamId = teamUUID
+	// tempMember.UserID = convert.StringToUUID(strUserId)
+	_, err = database.AddTeamMember(convert.StringToUUID(strUserId), teamUUID, "owner")
 	
 	if err == nil {
 		fmt.Println("Successfully added team member")
@@ -160,10 +164,10 @@ func (server *Server) UpdateTeam(ctx *gin.Context) {
 func (server *Server) SetupTeamRoutes() {
 	group := server.Gin.Group("/team")
 	{
+		group.POST("/", server.CreateTeam)
 		group.GET("/", server.GetAllTeams)
 		group.GET("/:id", server.GetTeamInfo)
 		// group.PUT("/:id", server.UpdateTeam)
 		// Step 3: Post Team Data API
-		group.POST("/", server.CreateTeam)
 	}
 }

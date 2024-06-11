@@ -1,6 +1,7 @@
 package database
 
 import (
+	"fmt"
 	"github.com/jackc/pgx/v5/pgtype"
 )
 
@@ -16,18 +17,24 @@ type DBTeam struct {
 	CreatedOn       pgtype.Timestamp `db:"created_on" json:"createdOn-hidden"`
 }
 
+type CreateTeamMember struct {
+	UserId		pgtype.UUID			`db:"user_id"`
+	TeamId		pgtype.UUID			`db:"team_id"`
+	TeamRole	string				`db:"team_role"`
+}
+
 // has all the user info & role to pass to be read client-side
 type DBTeamMemberInfo struct { 
 	DBUser	 // embed the DBUser fields into the struct
-    Role 	string	 `db:"role"` 
+    TeamRole 	string	 `db:"team_role"` 
 }
 
 // For team_member table.
 type DBTeamMember struct {
 	Id 			pgtype.UUID 		`db:"id"`
 	TeamId		pgtype.UUID			`db:"team_id"`
-	userId		pgtype.UUID     	`db:"user_id"`
-	Role 		string				`db:"role"`
+	UserId		pgtype.UUID     	`db:"user_id"`
+	TeamRole	string				`db:"team_role"`
 	CreatedOn	pgtype.Timestamp	`db:"created_on" json:"createdOn-hidden"`
 }
 
@@ -43,7 +50,7 @@ func CreateTeam(team DBTeam) (pgtype.UUID, error) {
 	return team.Id, err
 }
 
-// stepp 5: api get team info
+// stepp 5: used to construct the GetTeamResponse struct
 func GetTeam(teamId pgtype.UUID) (DBTeam, error) {
 	team, err := GetRow[DBTeam](
 		`SELECT 
@@ -87,24 +94,31 @@ func UpdateTeam(team DBTeam) (DBTeam, error) {
 	return event, err
 }
 
-func AddTeamMember(userId pgtype.UUID, teamUUID pgtype.UUID) (error) {
-
-	// _, err := GetRow[DBTeamMember](
-	// 	`INSERT userID,  INTO team_members
-
-	// 	`
-	// )
-	return nil
+// fields: userid, teamid, role 
+// called at server/teams.go createTeam & when someone clicks "join team"
+// DONT MESS WITH BELOW. IT WORKS.
+func AddTeamMember(userId pgtype.UUID, teamUUID pgtype.UUID, role string) (userID pgtype.UUID, err error) {
+	fmt.Println("=== line 100 userId", userId)
+	teamMember, err := GetRow[CreateTeamMember](
+		`INSERT INTO team_members
+			(user_id, team_id, role)
+			VALUES ($1, $2, $3)
+		RETURNING user_id, team_id, role`, userId, teamUUID, role)
+	return teamMember.UserId, err
 }
 
 func GetMembersByTeamId(teamId pgtype.UUID) (*[]DBTeamMemberInfo, error) {
+	
+	// In Go, you never return slice-data.
+	// Having * in sig means I'm returning the slice-header, which means I need & in my return 
+	// Not having * means I'm returning a small copy of the slice-header, no need for & in my return
 	members, err := GetRows[DBTeamMemberInfo](
 		// select all the info of a user (a user row) and their tm.role ()
-		`SELECT u.*, tm.role
-		FROM team_members tm
-		INNER JOIN users u on (u.id = tm.user_id)
-		WHERE tm.team_id = $1`, 
+		`SELECT u.*, tm.role as team_role
+			FROM team_members tm
+			INNER JOIN users u on (u.id = tm.user_id)
+			WHERE tm.team_id = $1`, 
 		teamId)
+		fmt.Println("\n============== line 121 database:\n", members)
 	return &members, err
-
 }
