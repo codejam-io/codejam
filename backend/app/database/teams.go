@@ -101,9 +101,9 @@ func AddTeamMember(userId pgtype.UUID, teamUUID pgtype.UUID, role string) (userI
 	fmt.Println("=== line 100 userId", userId)
 	teamMember, err := GetRow[CreateTeamMember](
 		`INSERT INTO team_members
-			(user_id, team_id, role)
+			(user_id, team_id, team_role)
 			VALUES ($1, $2, $3)
-		RETURNING user_id, team_id, role`, userId, teamUUID, role)
+		RETURNING user_id, team_id, team_role`, userId, teamUUID, role)
 	return teamMember.UserId, err
 }
 
@@ -114,7 +114,7 @@ func GetMembersByTeamId(teamId pgtype.UUID) (*[]DBTeamMemberInfo, error) {
 	// Not having * means I'm returning a small copy of the slice-header, no need for & in my return
 	members, err := GetRows[DBTeamMemberInfo](
 		// select all the info of a user (a user row) and their tm.role ()
-		`SELECT u.*, tm.role as team_role
+		`SELECT u.*, tm.team_role
 			FROM team_members tm
 			INNER JOIN users u on (u.id = tm.user_id)
 			WHERE tm.team_id = $1`, 

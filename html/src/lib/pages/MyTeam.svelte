@@ -11,7 +11,7 @@
     export let params: any; // set by svelte-spa-router
 
     let teamData: CodeJamTeam | null = null;
-    let teamMembers: TeamMember | Array<any>; 
+    let teamMembers: TeamMember[]; 
     let teamEvent: CodeJamEvent | null = null;
     console.log("params: ", params)
 

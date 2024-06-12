@@ -1,7 +1,7 @@
 class TeamMember {
     TeamId: string;
     UserId : string;
-    Role: string;
+    TeamRole: string;
     DisplayName: string;
     
     //TODO add Array<Teams> 
@@ -9,7 +9,7 @@ class TeamMember {
     constructor() {
         this.TeamId = '';
         this.UserId = '';
-        this.Role = '';
+        this.TeamRole = '';
         this.DisplayName = '';
         
     }
