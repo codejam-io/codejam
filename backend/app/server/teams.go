@@ -38,7 +38,7 @@ func (server *Server) GetAllTeams(ctx *gin.Context) {
 	}
 }
 
-// stepp 4: GET team info 
+// stepp 4: GET team info
 // purpose is to construct the DBTeamMemberInfo
 func (server *Server) GetTeamInfo(ctx *gin.Context) {
 	id := convert.StringToUUID(ctx.Param("id"))
@@ -110,7 +110,7 @@ func (server *Server) CreateTeam(ctx *gin.Context) {
 	team.Timezone = teamReq.Timezone
 
 	fmt.Printf("%+v", team)
-	// INSERTS TEAM into DB 
+	// INSERTS TEAM into DB
 	// PART 1/2 DONE
 	teamUUID, err := database.CreateTeam(team)
 	if err != nil {
@@ -124,10 +124,10 @@ func (server *Server) CreateTeam(ctx *gin.Context) {
 	// tempMember.TeamId = teamUUID
 	// tempMember.UserID = convert.StringToUUID(strUserId)
 	_, err = database.AddTeamMember(convert.StringToUUID(strUserId), teamUUID, "owner")
-	
+
 	if err == nil {
 		fmt.Println("Successfully added team member")
-		ctx.JSON(http.StatusCreated, map[string]pgtype.UUID {
+		ctx.JSON(http.StatusCreated, map[string]pgtype.UUID{
 			"id": teamUUID,
 		})
 	} else {

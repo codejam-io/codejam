@@ -1,76 +1,78 @@
 <script lang="ts">
-    import Page from "../components/Page.svelte";
-    import {Button, Card} from "flowbite-svelte";
-    import { onMount } from 'svelte';
-    import CodeJamTeam from '../models/team';
-    import {getTeam} from "../services/services"
-    import { Label, Input } from "flowbite-svelte";
-	import type TeamMember from "../models/TeamMember";
-    import CodeJamEvent from "../models/event";
+	import Page from '../components/Page.svelte';
+	import { Button, Card } from 'flowbite-svelte';
+	import { onMount } from 'svelte';
+	import CodeJamTeam from '../models/team';
+	import { getTeam } from '../services/services';
+	import { Label, Input } from 'flowbite-svelte';
+	import type TeamMember from '../models/TeamMember';
+	import CodeJamEvent from '../models/event';
+	import { loggedInStore, userStore } from '../stores/stores';
 
-    export let params: any; // set by svelte-spa-router
+	export let params: any; // set by svelte-spa-router
 
-    let teamData: CodeJamTeam | null = null;
-    let teamMembers: TeamMember[]; 
-    let teamEvent: CodeJamEvent | null = null;
-    console.log("params: ", params)
+	let teamData: CodeJamTeam | null = null;
+	let teamMembers: TeamMember[] = [];
+	let teamEvent: CodeJamEvent | null = null;
+	let loading = true;
+	let error: any = null;
 
+	async function loadData(id: string) {
+		try {
+			const response = await getTeam(id);
+			const data = await response.json();
+			teamData = data.Team;
+			teamMembers = data.Members;
+			teamEvent = data.Event;
+		} catch (err) {
+			error = 'Failed to load team data.';
+			console.error(err);
+		} finally {
+			loading = false;
+		}
+	}
 
-    // getTeam here returns an Object with {Team (CodeJamTeam), Event, Members(TeamMember)}
-    // Am I getting Members and Events info from GEtTeamInfo or from... 
-
-    async function loadData(id: string) {
-        getTeam(params.id).then((response: any) => {
-                console.log("line 17print: ", params.id, "== response: ", response)
-                response.json().then((data: any) => {
-                    console.log(data)
-                    teamData = data.Team as CodeJamTeam;
-                    teamMembers = data.Members
-                    console.log("team members:", teamMembers)
-                    teamEvent = data.Event as CodeJamEvent
-                });
-            }); 
-    }
-    $: {
-        console.log(params)
-        if (params) {
-            loadData(params.id)
-        }
-    }
-
+	$: if (params) {
+		loadData(params.id);
+	}
 </script>
-    <Page>
-        hi
-        <Card>
-            {#if teamData !== null}
-            {teamEvent?.Title}
-            <center>
-                <b>Team {teamData.Name}</b>
-            </center>
-            <span><b>Team Members: </b>
-                <ul>
-                    {#each teamMembers as member}
-                        <li>{member.DisplayName} </li>
-                    {/each}
-                </ul>
-                
-            </span>
 
-            <!--TODO: the the Event name and the Owner's name-->
-            <span>
-                <b>Visibility: </b>{teamData?.Visibility}
-            </span>
-            <span>
-                <b>Technologies: </b>{teamData?.Technologies}
-            </span>
-            <span>
-                <b>Availability: </b>{teamData?.Availability}
-            </span>
-            <span>
-                <b>Description: </b>{teamData?.Description}
-            </span>
-            {/if}
-            
-            
-        </Card>
-    </Page>
+<Page>
+	<Card size="md" class="w-full flex">
+		{#if loading}
+			<div class="p-4">Loading...</div>
+		{:else if error}
+			<div class="p-4 text-red-500">{error}</div>
+		{:else if teamData !== null}
+			<div class="p-4">{teamMembers[0]?.DisplayName}, your team has been successfully created!</div>
+			<h3 class="p-4">{teamEvent?.Title}</h3>
+			<Card size="xl" class="flex w-full p-8 px-4 py-6 space-y-3">
+				<center class="p-2">
+					<h4>Team {teamData.Name}</h4>
+					<span><small>(edit)</small></span>
+				</center>
+				<span>
+					<b>Team Members: </b>
+					<ul>
+						{#each teamMembers as member}
+							<li>{member.DisplayName}</li>
+						{/each}
+					</ul>
+				</span>
+				<span>
+					<b>Visibility: </b>{teamData.Visibility}
+				</span>
+				<span>
+					<b>Technologies: </b>{teamData.Technologies}
+				</span>
+				<span>
+					<b>Availability: </b>{teamData.Availability}
+				</span>
+				<span>
+					<b>Description: </b>{teamData.Description}
+				</span>
+				<p>Invite Link:</p>
+			</Card>
+		{/if}
+	</Card>
+</Page>

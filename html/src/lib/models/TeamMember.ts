@@ -1,9 +1,9 @@
 class TeamMember {
     TeamId: string;
-    UserId : string;
+    UserId: string;
     TeamRole: string;
     DisplayName: string;
-    
+
     //TODO add Array<Teams> 
 
     constructor() {
@@ -11,7 +11,7 @@ class TeamMember {
         this.UserId = '';
         this.TeamRole = '';
         this.DisplayName = '';
-        
+
     }
 }
 
