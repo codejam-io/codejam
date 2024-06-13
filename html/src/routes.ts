@@ -5,6 +5,7 @@ import TeamOptions from "./lib/pages/TeamOptions.svelte";
 import TeamsBrowse from "./lib/pages/TeamsBrowse.svelte";
 import TeamsCreate from "./lib/pages/TeamsCreate.svelte";
 import MyTeam from "./lib/pages/MyTeam.svelte";
+import Invite from "./lib/pages/Invite.svelte";
 
 
 export default {
@@ -15,6 +16,7 @@ export default {
     '/team': TeamOptions,
     //'/team/my-teams/': MyTeams // link to all your teams
     '/team/:id': MyTeam, // link to one of your teams (sharable)
+    '/team/invite/:id': Invite,
     '/teams/browse': TeamsBrowse,
     '/teams/create': TeamsCreate,
 }

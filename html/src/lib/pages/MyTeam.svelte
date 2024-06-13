@@ -71,7 +71,7 @@
 				<span>
 					<b>Description: </b>{teamData.Description}
 				</span>
-				<p>Invite Link:</p>
+				<p>Invite Link: <a href="/#/team/invite/{teamData.InviteCode}">here </a></p>
 			</Card>
 		{/if}
 	</Card>

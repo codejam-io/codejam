@@ -66,7 +66,8 @@ func GetTeam(teamId pgtype.UUID) (DBTeam, error) {
 			teams.technologies,
 			teams.availability,
 			teams.description,
-			teams.created_on
+			teams.created_on,
+			teams.invite_code
 		FROM teams
 		WHERE teams.id = $1`,
 		teamId)

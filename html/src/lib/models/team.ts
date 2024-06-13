@@ -9,6 +9,7 @@ class CodeJamTeam {
     Technologies: string;
     Availability: string;
     Description: string;
+    InviteCode: string;
 
     constructor() {
         this.Id = '';
@@ -18,6 +19,7 @@ class CodeJamTeam {
         this.Technologies = '';
         this.Availability = '';
         this.Description = '';
+        this.InviteCode = '';
     }
 }
 
