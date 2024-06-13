@@ -15,6 +15,7 @@ type DBTeam struct {
 	Availability string           `db:"availability"`
 	Description  string           `db:"description"`
 	CreatedOn    pgtype.Timestamp `db:"created_on" json:"createdOn-hidden"`
+	InviteCode   string			  `db:"invite_code"`
 }
 
 type CreateTeamMember struct {
@@ -41,12 +42,15 @@ type DBTeamMember struct {
 func CreateTeam(team DBTeam) (pgtype.UUID, error) {
 	team, err := GetRow[DBTeam](
 		`INSERT INTO teams
-            (event_id, name, visibility, timezone, technologies, availability, description)
+            (event_id, name, visibility, timezone, technologies, availability, description, invite_code)
             VALUES
-			($1, $2, $3, $4, $5, $6, $7)
-        RETURNING id, event_id, name, visibility, timezone, technologies, availability, description, created_on
+			($1, $2, $3, $4, $5, $6, $7, $8)
+        RETURNING id, event_id, name, visibility, timezone, technologies, availability, description, created_on, invite_code
 		`,
-		team.EventId, team.Name, team.Visibility, team.Timezone, team.Technologies, team.Availability, team.Description)
+		team.EventId, team.Name, team.Visibility, team.Timezone, team.Technologies, team.Availability, team.Description, team.InviteCode)
+	if err != nil {
+		fmt.Println("ERROR: failed to create team: ", err)
+	}
 	return team.Id, err
 }
 
@@ -69,6 +73,7 @@ func GetTeam(teamId pgtype.UUID) (DBTeam, error) {
 	// `SELECT * FROM teams WHERE id = $1`,
 	// teamId)
 	if err != nil {
+		fmt.Println("===dtabase error: ", err)
 		return DBTeam{}, err
 	}
 	return team, nil

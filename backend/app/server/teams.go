@@ -9,6 +9,12 @@ import (
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/gin"
 	"github.com/jackc/pgx/v5/pgtype"
+
+	"crypto/md5"
+	"crypto/rand"
+	"encoding/hex"
+	"math"
+	"math/big"
 )
 
 type CreateTeamRequest struct {
@@ -27,6 +33,15 @@ type GetTeamResponse struct {
 	Team    *database.DBTeam
 	Event   *database.DBEvent
 	Members *[]database.DBTeamMemberInfo // array(slice) of a struct
+}
+
+func MD5HashCode(teamName string) (string, error) {
+	randNum, err := rand.Int(rand.Reader, big.NewInt(math.MaxInt64))
+	if err != nil {
+		return "Md5 hash error", err
+	}
+	hash := md5.Sum([]byte(teamName + "." + randNum.String()))
+	return hex.EncodeToString(hash[:7]), nil
 }
 
 func (server *Server) GetAllTeams(ctx *gin.Context) {
@@ -109,6 +124,14 @@ func (server *Server) CreateTeam(ctx *gin.Context) {
 	team.Technologies = teamReq.Technologies
 	team.Timezone = teamReq.Timezone
 
+	md5code, err := MD5HashCode(team.Name)
+	if err != nil {
+		logger.Error("Error - Md5HashCode failed", err)
+		ctx.Status(http.StatusInternalServerError)
+		return
+	}
+	team.InviteCode = md5code
+
 	fmt.Printf("%+v", team)
 	// INSERTS TEAM into DB
 	// PART 1/2 DONE
@@ -118,11 +141,9 @@ func (server *Server) CreateTeam(ctx *gin.Context) {
 		ctx.Status(http.StatusBadRequest)
 		return
 	}
+
 	// PART 2/2 DONE
 	// construct TeamMember
-	// tempMember.Role = "owner"
-	// tempMember.TeamId = teamUUID
-	// tempMember.UserID = convert.StringToUUID(strUserId)
 	_, err = database.AddTeamMember(convert.StringToUUID(strUserId), teamUUID, "owner")
 
 	if err == nil {
