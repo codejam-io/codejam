@@ -16,7 +16,7 @@ export default {
     '/team': TeamOptions,
     //'/team/my-teams/': MyTeams // link to all your teams
     '/team/:id': MyTeam, // link to one of your teams (sharable)
-    '/team/invite/:id': Invite,
+    '/team/invite/:invitecode': Invite,
     '/teams/browse': TeamsBrowse,
     '/teams/create': TeamsCreate,
 }

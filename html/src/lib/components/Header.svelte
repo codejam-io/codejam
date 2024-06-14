@@ -5,18 +5,11 @@ import {Navbar, NavHamburger, NavLi, NavUl} from "flowbite-svelte";
 import {loggedInStore, userStore} from "../stores/stores";
 import DiscordIcon from "./DiscordIcon.svelte";
 import {location} from "svelte-spa-router";
+import { type User } from '../models/user'
 
 // reactive statement - "location" will change whenever url changes 
 $: activeUrl = '/#' + $location;
 </script>
-
-
-<style>
-    .active-link {
-            /* Add your styles here */
-            background-color: #f0f0f0; /* Example style */
-        }
-</style>
 
 
 <div class="flex flex-row w-fit pl-8">

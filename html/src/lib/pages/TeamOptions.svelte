@@ -1,6 +1,6 @@
 <script lang="ts">
 	import Page from '../components/Page.svelte';
-	import { Button, Card } from 'flowbite-svelte';
+	import { Breadcrumb, BreadcrumbItem, Button, Card } from 'flowbite-svelte';
 	import { FontAwesomeIcon } from '@fortawesome/svelte-fontawesome';
 	import { faPenToSquare } from '@fortawesome/free-solid-svg-icons';
 	import CodeJamEvent from '../models/event';
@@ -11,6 +11,10 @@
 </script>
 
 <Page>
+    <Breadcrumb solid class="mb-4 w-full max-w-screen-xl">
+		<BreadcrumbItem href="/#/" home>Home</BreadcrumbItem>
+		<BreadcrumbItem >Team Options</BreadcrumbItem>
+    </Breadcrumb>
 	<Card size="xl" class="w-full">
 		<h2>Team Options</h2>
 		<div class="flex flex-row gap-8 my-8"></div>

@@ -1,9 +1,9 @@
-import {activeEventStore, eventStatusStore, userStore} from "../stores/stores";
+import { activeEventStore, eventStatusStore, userStore } from "../stores/stores";
 import CodeJamEvent from "../models/event";
 import CodeJamTeam from "../models/team";
 
 // This shouldn't ever need to be set since dev and prod environments will just use relative endpoints
-export let baseApiUrl : string = "";
+export let baseApiUrl: string = "";
 
 const originalFetch = window.fetch;
 
@@ -22,7 +22,7 @@ window.fetch = (...args) => {
 }
 
 export async function getUser() {
-    return fetch(baseApiUrl + "/user/", {method: 'GET', credentials: 'include'})
+    return fetch(baseApiUrl + "/user/", { method: 'GET', credentials: 'include' })
         .then((response) => {
             if (response.status === 401) {
                 userStore.set(null);
@@ -96,18 +96,33 @@ export async function getEventStatuses() {
 export async function postTeam(team: CodeJamTeam) {
     // Step 2: Post Team Data API (accepts formData(CodeJamTeam) as argument)
     return await fetch(baseApiUrl + "/team/" + team.Id,
-    // formData turned into JSON and sent via POST, retreived at CreateTeam(ctx *gin.Context)
+        // formData turned into JSON and sent via POST, retreived at CreateTeam(ctx *gin.Context)
         {
             method: "POST",
             body: JSON.stringify(team)
         });
 }
 
-export async function getTeam(id: string) {
-    // stepp 3 pt 1: 
-    // goes to server/getTeam ctx
-    console.log("team id from getTeam/services.ts:", id)
+export async function getTeamById(id: string) {
     return fetch(baseApiUrl + "/team/" + id);
+}
+
+export async function getTeamByInvite(inviteCode: string) {
+    // stepp 3 pt 1:
+    return fetch(baseApiUrl + "/team/invite/" + inviteCode);
+}
+
+
+// any one who has the link joinTeam connects to can join the team.
+// make sure invite_code matches 
+export async function joinTeam(team: CodeJamTeam, userId: string, invite_code: string) {
+    // making a post to team_members
+    return await fetch(baseApiUrl + "/team/" + invite_code,
+        {
+            method: "POST",
+            body: JSON.stringify({ team, userId, invite_code })
+        }
+    )
 }
 
 // Always call at startup to get the initial states

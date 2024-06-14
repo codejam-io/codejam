@@ -11,7 +11,7 @@
 		Spinner,
 		Textarea
 	} from 'flowbite-svelte';
-	import { getActiveEvent, getEvent, putEvent } from '../services/services';
+	import { getActiveEvent, getEvent, putEvent } from '../services/services'
 	import { eventStatusStore } from '../stores/stores';
 	import CodeJamEvent from '../models/event';
 	import FormField from '../components/FormField.svelte';

@@ -74,7 +74,30 @@ func GetTeam(teamId pgtype.UUID) (DBTeam, error) {
 	// `SELECT * FROM teams WHERE id = $1`,
 	// teamId)
 	if err != nil {
-		fmt.Println("===dtabase error: ", err)
+		logger.Error("===DB/GetTeam error: ", err)
+		return DBTeam{}, err
+	}
+	return team, nil
+}
+
+func GetTeamByInvite(inviteCode string) (DBTeam, error) {
+	team, err := GetRow[DBTeam](
+		`SELECT 
+			teams.id,
+			teams.event_id,
+			teams.name,
+			teams.visibility,
+			teams.timezone,
+			teams.technologies,
+			teams.availability,
+			teams.description,
+			teams.created_on,
+			teams.invite_code
+		FROM teams
+		WHERE teams.invite_code = $1`,
+		inviteCode)
+	if err != nil {
+		logger.Error("===DB/GetTeamByInvite error: ", err)
 		return DBTeam{}, err
 	}
 	return team, nil

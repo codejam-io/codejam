@@ -1,9 +1,9 @@
 <script lang="ts">
 	import Page from '../components/Page.svelte';
-	import { Button, Card } from 'flowbite-svelte';
+	import { Breadcrumb, BreadcrumbItem, Button, Card } from 'flowbite-svelte';
 	import { onMount } from 'svelte';
 	import CodeJamTeam from '../models/team';
-	import { getTeam } from '../services/services';
+	import { getTeamById } from '../services/services';
 	import { Label, Input } from 'flowbite-svelte';
 	import type TeamMember from '../models/TeamMember';
 	import CodeJamEvent from '../models/event';
@@ -19,7 +19,7 @@
 
 	async function loadData(id: string) {
 		try {
-			const response = await getTeam(id);
+			const response = await getTeamById(id);
 			const data = await response.json();
 			teamData = data.Team;
 			teamMembers = data.Members;
@@ -38,6 +38,13 @@
 </script>
 
 <Page>
+    <Breadcrumb solid class="mb-4 w-full max-w-screen-xl">
+		<BreadcrumbItem href="/#/" home>Home</BreadcrumbItem>
+		<BreadcrumbItem href="/#/team">Team Options</BreadcrumbItem>
+		<BreadcrumbItem href="/#/team/create">Create Team</BreadcrumbItem>
+        <BreadcrumbItem>View Teams</BreadcrumbItem>
+	</Breadcrumb>
+
 	<Card size="md" class="w-full flex">
 		{#if loading}
 			<div class="p-4">Loading...</div>

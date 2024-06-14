@@ -92,6 +92,47 @@ func (server *Server) GetTeamInfo(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, teamResponse)
 }
 
+func (server *Server) GetTeamInfoByInviteCode(ctx *gin.Context) {
+	inviteCode := ctx.Param("invitecode")
+	fmt.Println("\n===server getteam by invite code: ", inviteCode)
+
+	var teamResponse GetTeamResponse
+	var team database.DBTeam
+	var event database.DBEvent
+	var members *[]database.DBTeamMemberInfo //user info based on teamId
+
+	team, err := database.GetTeamByInvite(inviteCode)
+	if err != nil {
+		logger.Error("failed to get team: %v", err)
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": fmt.Sprintf("failed to get team: %v", err)})
+		return
+	} else {
+		fmt.Println("TEST if GetTeamByInvite was SUCCESS: ", err, " + ", team)
+	}
+
+	event, err = database.GetEvent(team.EventId)
+	if err != nil {
+		logger.Error("failed to get event: %v", err)
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": fmt.Sprintf("failed to get event: %v", err)})
+		return
+	}
+
+	members, err = database.GetMembersByTeamId(team.Id)
+	if err != nil {
+		logger.Error("failed to get event: %v", err)
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": fmt.Sprintf("failed to get members: %v", err)})
+		return
+	}
+
+	// attach all 3 structures to GetTeamResponse --> nested structs turn into nested JSON (with ctx.JSON)
+	teamResponse.Team = &team
+	teamResponse.Event = &event
+	teamResponse.Members = members
+
+	fmt.Println(teamResponse)
+	ctx.JSON(http.StatusOK, teamResponse)
+}
+
 func (server *Server) CreateTeam(ctx *gin.Context) {
 	// ctx of *gin.Context has HTTP request info.
 	// Step 4: Post Team Data API (TWO PARTS 1) create team 2) add team members)
@@ -188,6 +229,7 @@ func (server *Server) SetupTeamRoutes() {
 		group.POST("/", server.CreateTeam)
 		group.GET("/", server.GetAllTeams)
 		group.GET("/:id", server.GetTeamInfo)
+		group.GET("/invite/:invitecode", server.GetTeamInfoByInviteCode)
 		// group.PUT("/:id", server.UpdateTeam)
 		// Step 3: Post Team Data API
 	}
