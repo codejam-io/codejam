@@ -14,8 +14,8 @@
 	let teamData: CodeJamTeam | null = null;
 	let teamMembers: TeamMember[] = [];
 	let teamEvent: CodeJamEvent | null = null;
-	let loading = true;
-	let error: any = null;
+	let loading: boolean = true; 
+	let error: string | null = null; 
 
 	async function loadData(id: string) {
 		try {
@@ -25,7 +25,7 @@
 			teamMembers = data.Members;
 			teamEvent = data.Event;
 		} catch (err) {
-			error = 'Failed to load team data.';
+			error = `Failed to load team data: ${err}`; 
 			console.error(err);
 		} finally {
 			loading = false;
@@ -36,13 +36,12 @@
 		loadData(params.id);
 	}
 </script>
+<!-- TODO: Create Owner, Member, and Public View -->
 
 <Page>
     <Breadcrumb solid class="mb-4 w-full max-w-screen-xl">
-		<BreadcrumbItem href="/#/" home>Home</BreadcrumbItem>
-		<BreadcrumbItem href="/#/team">Team Options</BreadcrumbItem>
-		<BreadcrumbItem href="/#/team/create">Create Team</BreadcrumbItem>
-        <BreadcrumbItem>View Teams</BreadcrumbItem>
+        <BreadcrumbItem href="/#/" home>Home</BreadcrumbItem>
+        <BreadcrumbItem>Team {teamData?.Name}</BreadcrumbItem>
 	</Breadcrumb>
 
 	<Card size="md" class="w-full flex">

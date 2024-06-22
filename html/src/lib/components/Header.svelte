@@ -26,7 +26,7 @@ $: activeUrl = '/#' + $location;
                     <NavLi href="/#/admin/events">Manage Events</NavLi>
                     {/if}
                     <NavLi href="/#/team">Sign-Up</NavLi>
-                    <NavLi href="/">Profile</NavLi>
+                    <NavLi href="/#/teams">My Teams</NavLi>
                     <NavLi href="/user/logout">Logout</NavLi>
                 {:else}
                     <NavLi href="/oauth/redirect">Login with Discord <DiscordIcon/></NavLi>

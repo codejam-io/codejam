@@ -6,6 +6,7 @@ import TeamsBrowse from "./lib/pages/TeamsBrowse.svelte";
 import TeamsCreate from "./lib/pages/TeamsCreate.svelte";
 import MyTeam from "./lib/pages/MyTeam.svelte";
 import Invite from "./lib/pages/Invite.svelte";
+import UserTeams from "./lib/pages/UserTeams.svelte";
 
 
 export default {
@@ -14,9 +15,9 @@ export default {
     '/admin/events': EventList,
     '/admin/event/:id': EventEdit,
     '/team': TeamOptions,
-    //'/team/my-teams/': MyTeams // link to all your teams
-    '/team/:id': MyTeam, // link to one of your teams (sharable)
-    '/team/invite/:invitecode': Invite,
+    '/team/:id': MyTeam, // link to one of your teams (sharable)  We get an id here in this route...
+    '/team/invite/:invitecode': Invite, // sharable
+    '/teams': UserTeams, // displays all the user's teams (private)
     '/teams/browse': TeamsBrowse,
     '/teams/create': TeamsCreate,
 }

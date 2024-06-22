@@ -15,7 +15,7 @@ type DBTeam struct {
 	Availability string           `db:"availability"`
 	Description  string           `db:"description"`
 	CreatedOn    pgtype.Timestamp `db:"created_on" json:"createdOn-hidden"`
-	InviteCode   string			  `db:"invite_code"`
+	InviteCode   string           `db:"invite_code"`
 }
 
 type CreateTeamMember struct {
@@ -37,6 +37,12 @@ type DBTeamMember struct {
 	UserId    pgtype.UUID      `db:"user_id"`
 	TeamRole  string           `db:"team_role"`
 	CreatedOn pgtype.Timestamp `db:"created_on" json:"createdOn-hidden"`
+}
+
+type DBUserTeams struct {
+	DBTeam 
+	DisplayName	 	string		`db:"display_name"`
+	TeamRole		string 		`db:"team_role"`
 }
 
 func CreateTeam(team DBTeam) (pgtype.UUID, error) {
@@ -106,6 +112,25 @@ func GetTeamByInvite(inviteCode string) (DBTeam, error) {
 func GetTeams() ([]DBTeam, error) {
 	result, err := GetRows[DBTeam](`SELECT * FROM teams`)
 	return result, err
+}
+
+func GetUserTeams(userId pgtype.UUID) ([]DBUserTeams, error) {
+	result, err := GetRows[DBUserTeams](
+		`SELECT
+			u.display_name,
+			t.*, 
+			tm.team_role
+		FROM users u
+		INNER JOIN team_members tm ON u.id = tm.user_id
+		INNER JOIN teams t ON tm.team_id = t.id
+		WHERE u.id = $1`,
+		userId)
+	if err != nil {
+		fmt.Println("that didn't work: database.GetUserTeams")
+		return nil, err
+	}
+
+	return result, err  // Try look at the table
 }
 
 func UpdateTeam(team DBTeam) (DBTeam, error) {

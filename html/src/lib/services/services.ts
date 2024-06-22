@@ -103,6 +103,10 @@ export async function postTeam(team: CodeJamTeam) {
         });
 }
 
+export async function getUserTeams(){
+    return fetch(baseApiUrl + "/teams");
+}
+
 export async function getTeamById(id: string) {
     return fetch(baseApiUrl + "/team/" + id);
 }

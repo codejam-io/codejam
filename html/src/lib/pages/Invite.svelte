@@ -62,7 +62,7 @@
                 Click below to join {teamMembers[0]?.DisplayName}'s team: 
             </div>
 
-            <Button>Join {teamData?.Name}</Button>
+            <Button href="/">Join {teamData?.Name}</Button>
 		{:else}
         <div class="py-4">
 			Must be logged in to join a team.
