@@ -15,6 +15,7 @@ CREATE TABLE IF NOT EXISTS events (
     status_id integer,
     title TEXT NOT NULL,
     description TEXT NOT NULL,
+    timeline TEXT NOT NULL,
     rules TEXT NOT NULL,
     organizer_user_id UUID NOT NULL,
     max_teams integer default -1,

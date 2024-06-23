@@ -26,6 +26,7 @@ func main() {
 	config.LoadFromFile("config.toml")
 
 	database.Initialize(config.Database)
+	database.RunMigrations()
 
 	server := server.Server{
 		Config: *config,

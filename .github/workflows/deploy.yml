@@ -1,0 +1,26 @@
+jobs:
+    deploy:
+      name: Deploy Website
+      runs-on: ubuntu-latest
+      steps:
+        - name: Remote deploy
+          uses: appleboy/ssh-action@master
+          with:
+            host: ${{ secrets.SSH_HOST }}
+            key: ${{ secrets.SSH_KEY }}
+            port: ${{ secrets.SSH_PORT }}
+            username: ${{ secrets.SSH_USER }}
+            script: |
+              source ~/.bash_profile
+              cd ~/projects/codejam2024/
+              git reset --hard HEAD || true
+              git pull origin main
+              ./build.sh
+              sudo systemctl restart codejam.service
+  
+name: Deploy
+  
+on:
+    push:
+        branches:
+            - main

@@ -8,9 +8,15 @@ type DBUser struct {
 	Id            pgtype.UUID      `db:"id" `
 	ServiceName   string           `db:"service_name"`
 	ServiceUserId string           `db:"service_user_id" json:"-"`
+	Role          string           `db:"role"`
 	DisplayName   string           `db:"display_name"`
 	CreatedOn     pgtype.Timestamp `db:"created_on" json:"-"`
 }
+
+// Roles
+const (
+	Admin = "ADMIN"
+)
 
 func CreateUser(serviceName string, serviceUserId string, serviceDisplayName string) DBUser {
 	user, err := GetRow[DBUser](
@@ -38,3 +44,4 @@ func GetUser(userId pgtype.UUID) DBUser {
 	}
 	return user
 }
+
