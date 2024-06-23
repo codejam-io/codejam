@@ -11,3 +11,6 @@ config.toml
 codejam.io.exe
 brainstorm.txt
 gradientchange.svelte
+
+# docker related files
+docker-compose.override.yaml

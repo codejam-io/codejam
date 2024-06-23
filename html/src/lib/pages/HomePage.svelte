@@ -19,7 +19,7 @@
 				</ul>
 			</div>
 			<div class="flex col">
-				<img src="/static/pinktoasttransparent.png" class="object-contain max-h-72" alt="toast with jam and code on it">
+				<img src="/static/pinktoasttransparent.webp" class="object-contain max-h-72" alt="toast with jam and code on it">
 			</div>
 		</div>
 

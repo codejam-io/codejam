@@ -1,6 +1,6 @@
 jobs:
     deploy:
-      name: Deploy Website
+      name: Deploy Prod Release
       runs-on: ubuntu-latest
       steps:
         - name: Remote deploy
@@ -12,15 +12,12 @@ jobs:
             username: ${{ secrets.SSH_USER }}
             script: |
               source ~/.bash_profile
-              cd ~/projects/codejam2024/
-              git reset --hard HEAD || true
-              git pull origin main
-              ./build.sh
-              sudo systemctl restart codejam-staging.service
+              sudo systemctl stop codejam-prod.service
+              sudo cp /opt/codejam/staging/codejam.io /opt/codejam/prod/
+              sudo systemctl start codejam-prod.service
   
-name: Deploy
+name: Release
   
 on:
-    push:
-        branches:
-            - main
+    release:
+        types: [published]
