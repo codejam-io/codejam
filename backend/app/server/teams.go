@@ -53,6 +53,33 @@ func (server *Server) GetAllTeams(ctx *gin.Context) {
 	}
 }
 
+func (server *Server) GetUserTeams(ctx *gin.Context) {
+	session := sessions.Default(ctx)
+	userId := session.Get("userId")
+	strUserId := userId.(string)
+
+	if userId == nil {
+		ctx.Status(http.StatusNotFound)
+		return
+	}
+	// var teamResponse GetTeamResponse
+	// var teamsResponse []GetTeamResponse
+
+	teams, err := database.GetUserTeams(convert.StringToUUID(strUserId))
+	if err != nil {
+		ctx.Status(http.StatusInternalServerError)
+		return
+	} 
+
+	//1. join databse to return members
+	ctx.JSON(http.StatusOK, teams)
+		
+		// add all the GetTeamResponse to []GetTeamResponse
+		// loop through teams, get team id
+		// assign each team to teamResponse type..
+	
+}
+
 // stepp 4: GET team info
 // purpose is to construct the DBTeamMemberInfo
 func (server *Server) GetTeamInfo(ctx *gin.Context) {
@@ -140,6 +167,7 @@ func (server *Server) CreateTeam(ctx *gin.Context) {
 	userId := session.Get("userId")
 	if userId != nil {
 		ctx.Status(http.StatusUnauthorized)
+		return
 	}
 	strUserId := userId.(string)
 
@@ -233,4 +261,6 @@ func (server *Server) SetupTeamRoutes() {
 		// group.PUT("/:id", server.UpdateTeam)
 		// Step 3: Post Team Data API
 	}
+
+	server.Gin.GET("/teams", server.GetUserTeams) // I think this works rofl
 }
