@@ -112,6 +112,10 @@
 						<Input bind:value={formData.Title}></Input>
 					</FormField>
 
+					<FormField label="Timeline" name="Timeline">
+						<Textarea rows="10" bind:value={formData.Timeline}></Textarea>
+					</FormField>
+
 					<FormField label="Description" name="Description">
 						<Textarea rows="10" bind:value={formData.Description}></Textarea>
 					</FormField>

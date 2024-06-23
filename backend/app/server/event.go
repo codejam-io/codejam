@@ -15,6 +15,7 @@ import (
 func sanitizeEvent(event *database.DBEvent) {
 	event.Title = sanitize.Scripts(event.Title)
 	event.Description = sanitize.Scripts(event.Description)
+	event.Timeline = sanitize.Scripts(event.Timeline)
 	event.Rules = sanitize.Scripts(event.Rules)
 }
 
@@ -78,7 +79,7 @@ func (server *Server) PutEvent(ctx *gin.Context) {
 	userId := session.Get("userId")
 	if userId != nil {
 		var event database.DBEvent
-		
+
 		// taking submitted data and putting it into an object
 		err := ctx.ShouldBindJSON(&event)
 		if err != nil {

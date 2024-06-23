@@ -68,14 +68,15 @@ func UpdateEvent(event DBEvent) (DBEvent, error) {
 		`UPDATE events
          SET status_id=$2,
              title=$3,
-             description=$4,
-             rules=$5,
-             max_teams=$6,
-             starts_at=$7,
-             ends_at=$8
+             timeline=$4,
+             description=$5,
+             rules=$6,
+             max_teams=$7,
+             starts_at=$8,
+             ends_at=$9
          WHERE id=$1
          RETURNING *`,
-		event.Id, event.StatusId, event.Title, event.Description, event.Rules, event.MaxTeams, event.StartsAt, event.EndsAt)
+		event.Id, event.StatusId, event.Title, event.Timeline, event.Description, event.Rules, event.MaxTeams, event.StartsAt, event.EndsAt)
 	return event, err
 }
 
