@@ -2,11 +2,20 @@ package server
 
 import (
 	"codejam.io/database"
+	"codejam.io/server/models"
 	"github.com/emicklei/pgtalk/convert"
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/gin"
 	"net/http"
+	"strings"
 )
+
+func validateUser(user *database.DBUser, response *models.FormResponse) {
+	// Title is required
+	if strings.Trim(user.DisplayName, " ") == "" {
+		response.AddError("DisplayName", "required")
+	}
+}
 
 func (server *Server) GetUser(ctx *gin.Context) {
 	session := sessions.Default(ctx)
@@ -17,6 +26,45 @@ func (server *Server) GetUser(ctx *gin.Context) {
 		return
 	}
 	ctx.Status(http.StatusUnauthorized)
+}
+
+func (server *Server) PutUser(ctx *gin.Context) {
+	session := sessions.Default(ctx)
+	userId := session.Get("userId")
+	if userId != nil {
+		var user database.DBUser
+		err := ctx.ShouldBindJSON(&user)
+		if err != nil {
+			ctx.Status(http.StatusBadRequest)
+			return
+		}
+
+		response := models.NewFormResponse()
+		validateUser(&user, &response)
+
+		// Perform validation
+		validateUser(&user, &response)
+		if len(response.Errors) > 0 {
+			logger.Error("Validation Error: %v+", user)
+			ctx.JSON(http.StatusBadRequest, response)
+			return
+		}
+
+		user.Id = convert.StringToUUID(userId.(string))
+		_, err = database.UpdateUser(user)
+		if err != nil {
+			logger.Error("Error calling database.UpdateEvent: %v", err)
+			ctx.Status(http.StatusInternalServerError)
+			return
+		} else {
+			response.Data = user
+			ctx.JSON(http.StatusOK, response)
+		}
+
+	} else {
+		logger.Error("PutUser Unauthorized: no session")
+		ctx.Status(http.StatusUnauthorized)
+	}
 }
 
 // Logout is a GET route for logging out a user.
@@ -40,6 +88,7 @@ func (server *Server) SetupUserRoutes() {
 	group := server.Gin.Group("/user")
 	{
 		group.GET("/", server.GetUser)
+		group.PUT("/", server.PutUser)
 		group.GET("/logout", server.Logout)
 	}
 }

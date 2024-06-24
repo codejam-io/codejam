@@ -46,6 +46,14 @@ export async function getUser() {
         });
 }
 
+export async function putProfile(user: User): Promise<Response> {
+    return fetch(baseApiUrl + "/user/",
+        {
+            method: "PUT",
+            body: JSON.stringify(user)
+        });
+}
+
 export async function logout() {
     return fetch(baseApiUrl + "/user/logout")
         .then(() => {

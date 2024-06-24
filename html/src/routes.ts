@@ -7,6 +7,7 @@ import TeamsCreate from "./lib/pages/TeamsCreate.svelte";
 import MyTeam from "./lib/pages/MyTeam.svelte";
 import Invite from "./lib/pages/Invite.svelte";
 import UserTeams from "./lib/pages/UserTeams.svelte";
+import ProfilePage from "./lib/pages/ProfilePage.svelte";
 
 
 export default {
@@ -20,4 +21,5 @@ export default {
     '/teams': UserTeams, // displays all the user's teams (private)
     '/teams/browse': TeamsBrowse,
     '/teams/create': TeamsCreate,
+    '/profile': ProfilePage,
 }

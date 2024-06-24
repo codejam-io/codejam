@@ -45,7 +45,7 @@ $: activeUrl = '/#' + $location;
                              a race condition when the Dropdown doesn't bind and therefore won't work -->
                         <Dropdown class="w-44" placement="bottom" triggeredBy="#menu-avatar" trigger="hover">
                             <DropdownHeader>{activeUser.user?.DisplayName}</DropdownHeader>
-                            <DropdownItem href="/">Profile</DropdownItem>
+                            <DropdownItem href="/#/profile">Profile</DropdownItem>
                             <DropdownDivider />
                             <DropdownItem href="/user/logout">Logout</DropdownItem>
                         </Dropdown>

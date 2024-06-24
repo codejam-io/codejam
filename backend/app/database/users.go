@@ -45,3 +45,16 @@ func GetUser(userId pgtype.UUID) DBUser {
 	}
 	return user
 }
+
+func UpdateUser(user DBUser) (DBUser, error) {
+	user, err := GetRow[DBUser](
+		`UPDATE users
+	 	 SET display_name = $2
+	     WHERE id = $1
+	     RETURNING *`,
+		user.Id, user.DisplayName)
+	if err != nil {
+		logger.Error("error updating user: %v", err)
+	}
+	return user, err
+}
