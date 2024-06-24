@@ -28,6 +28,7 @@ $: activeUrl = '/#' + $location;
         <!-- We don't want to set any initial component state until the activeUserStore has been initially
              set to avoid flickering state changes while data is initially loaded -->
         {#await $activeUserStore}
+            <!-- do nothing-->
         {:then activeUser}
             {#if activeUser !== null}
                 <Navbar class="rounded-bl-3xl">
