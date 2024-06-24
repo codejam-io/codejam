@@ -4,8 +4,8 @@ import (
 	"codejam.io/integrations/discord"
 	"codejam.io/integrations/github"
 	"codejam.io/logging"
-	"strings"
 	"encoding/json"
+	"strings"
 )
 
 var logger = logging.NewLogger(logging.Options{Name: "Integrations", Level: logging.DEBUG})
@@ -39,6 +39,7 @@ func getDiscordUser(accessToken string) *IntegrationUser {
 			IntegrationName: "discord",
 			UserId:          user["id"].(string),
 			DisplayName:     user["global_name"].(string),
+			AvatarUrl:       user["avatar"].(string),
 		}
 	}
 }
