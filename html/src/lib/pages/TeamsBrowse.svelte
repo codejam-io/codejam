@@ -42,12 +42,14 @@ loadData();
         
 		{:else if allTeams === null}
             <div>
-                Looks like you don't have any teams! Go to <a href="/#/">browse teams</a> to join one!
-            </div>
-        {:else if allTeams.length === 0}
-            <div>
                 Error, please contact admin.
             </div>
+
+		{:else if allTeams.length === 0}
+            <div>
+                Looks like you don't have any teams! Go to <a href="/#/">browse teams</a> to join one!
+            </div>
+        
         {:else}
 
             {#each allTeams as Team}

@@ -49,19 +49,15 @@ If not team owner, cannot view-->
 			<div class="p-4">Loading...</div>
 		{:else if error}
 			<div class="p-4 text-red-500">{error}</div>
-        
-		{:else if userTeams.length == 0}
-            <div>
-                Looks like you don't have any teams! Go to <a href="/#/">browse teams</a> to join one!
-            </div>
-        {:else if userTeams == null}
+        {:else if userTeams === null}
             <div>
                 Error, please contact admin.
             </div>
+		{:else if userTeams.length === 0}
+            <div>
+                Looks like you don't have any teams! Go to <a href="/#/">browse teams</a> to join one!
+            </div>
         {:else}
-            hi
-
-            {userTeams}
             {#each userTeams as userTeam}
             <Card size="xl" class="flex w-full p-8 px-4 py-6 space-y-3">
 				<center class="p-2">
@@ -80,27 +76,7 @@ If not team owner, cannot view-->
 					<b>Description: </b>{userTeam.Description}
 				</span>
 
-				<!-- <span>
-					<b>Team Members: </b>
-					<ul>
-						{#each teamMembers as member}
-							<li>{member.DisplayName}</li>
-						{/each}
-					</ul>
-				</span>
-				<span>
-					<b>Visibility: </b>{teamData.Visibility}
-				</span>
-				<span>
-					<b>Technologies: </b>{teamData.Technologies}
-				</span>
-				<span>
-					<b>Availability: </b>{teamData.Availability}
-				</span>
-				<span>
-					<b>Description: </b>{teamData.Description}
-				</span>
-				<p>Invite Link: <a href="/#/team/invite/{teamData.InviteCode}">here </a></p> -->
+
 			</Card>
 
 

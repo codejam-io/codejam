@@ -60,8 +60,6 @@ func (server *Server) GetDebugSession(ctx *gin.Context) {
 
 	dbUser := database.CreateUser("discord", "0", "DebugCow")
 	session := sessions.Default(ctx)
-	session.Set("userId", "16a2adf0-de4c-4f2a-ae3e-c4cff316194e")
-	session.Set("displayName", "estha")
 	session.Set("userId", convert.UUIDToString(dbUser.Id))
 	session.Set("displayName", dbUser.DisplayName)
 

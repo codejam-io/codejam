@@ -166,18 +166,12 @@ func (server *Server) CreateTeam(ctx *gin.Context) {
 	// Step 4: Post Team Data API (TWO PARTS 1) create team 2) add team members)
 	session := sessions.Default(ctx)
 	userId := session.Get("userId")
-	if userId != nil {
-		ctx.Status(http.StatusUnauthorized)
-		return
-	}
+
 	strUserId := userId.(string)
 
 	var team database.DBTeam
 	var teamReq CreateTeamRequest
-	// var tempMember CreateTeamMember
 
-	// shouldbindJSON binds the POST-req-JSON-info to the provided structure in ()
-	// err should be <nil> (ctx feature)
 	err := ctx.ShouldBindJSON(&teamReq)
 	if err != nil {
 		logger.Error("CreateTeam Request ShouldBindJSON error: %v", err)
@@ -203,6 +197,7 @@ func (server *Server) CreateTeam(ctx *gin.Context) {
 	team.InviteCode = md5code
 
 	fmt.Printf("%+v", team)
+	
 	// INSERTS TEAM into DB
 	// PART 1/2 DONE
 	teamUUID, err := database.CreateTeam(team)
