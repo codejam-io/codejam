@@ -1,6 +1,12 @@
-import { activeEventStore, eventStatusStore, userStore } from "../stores/stores";
+import {
+    activeEventStore,
+    eventStatusStore,
+    userStore,
+    activeUserStore
+} from "../stores/stores";
 import CodeJamEvent from "../models/event";
 import CodeJamTeam from "../models/team";
+import type {ActiveUser, User} from "../models/user";
 
 // This shouldn't ever need to be set since dev and prod environments will just use relative endpoints
 export let baseApiUrl: string = "";
@@ -26,10 +32,12 @@ export async function getUser() {
         .then((response) => {
             if (response.status === 401) {
                 userStore.set(null);
+                activeUserStore.set(<ActiveUser>{user: null, loggedIn: false});
             } else {
                 response.json()
                     .then((data) => {
                         userStore.set(data);
+                        activeUserStore.set(<ActiveUser>{user: data as User, loggedIn: true})
                     })
                     .catch((err) => {
                         console.error("error deserializing user", err);
@@ -38,10 +46,19 @@ export async function getUser() {
         });
 }
 
+export async function putProfile(user: User): Promise<Response> {
+    return fetch(baseApiUrl + "/user/",
+        {
+            method: "PUT",
+            body: JSON.stringify(user)
+        });
+}
+
 export async function logout() {
     return fetch(baseApiUrl + "/user/logout")
         .then(() => {
             userStore.set(null);
+            activeUserStore.set(<ActiveUser>{user: null, loggedIn: false});
         })
         .catch((err) => {
             console.error("Logout error", err);
@@ -134,9 +151,7 @@ export async function joinTeam(team: CodeJamTeam, userId: string, invite_code: s
 
 // Always call at startup to get the initial states
 async function initialLoad() {
-    getUser();
-    getActiveEvent();
-    getEventStatuses();
+    await Promise.all([getUser(), getActiveEvent(), getEventStatuses()]);
 }
 
 initialLoad();

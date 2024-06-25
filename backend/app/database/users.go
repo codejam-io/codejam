@@ -7,9 +7,10 @@ import (
 type DBUser struct {
 	Id            pgtype.UUID      `db:"id" `
 	ServiceName   string           `db:"service_name"`
-	ServiceUserId string           `db:"service_user_id" json:"-"`
+	ServiceUserId string           `db:"service_user_id"`
 	Role          string           `db:"role"`
 	DisplayName   string           `db:"display_name"`
+	AvatarUrl     string           `db:"avatar_url"`
 	CreatedOn     pgtype.Timestamp `db:"created_on" json:"-"`
 }
 
@@ -18,15 +19,15 @@ const (
 	Admin = "ADMIN"
 )
 
-func CreateUser(serviceName string, serviceUserId string, serviceDisplayName string) DBUser {
+func CreateUser(serviceName string, serviceUserId string, serviceDisplayName string, avatarUrl string) DBUser {
 	user, err := GetRow[DBUser](
-		`INSERT INTO users (service_name, service_user_id, display_name)
-		 VALUES ($1, $2, $3)
+		`INSERT INTO users (service_name, service_user_id, display_name, avatar_url)
+		 VALUES ($1, $2, $3, $4)
 		 ON CONFLICT (service_name, service_user_id)
 		 DO UPDATE
-		 SET display_name = $3
+		 SET display_name = $3, avatar_url = $4
 		 RETURNING *`,
-		serviceName, serviceUserId, serviceDisplayName)
+		serviceName, serviceUserId, serviceDisplayName, avatarUrl)
 	if err != nil {
 		logger.Error("error getting user: %v", err)
 	}
@@ -45,3 +46,15 @@ func GetUser(userId pgtype.UUID) DBUser {
 	return user
 }
 
+func UpdateUser(user DBUser) (DBUser, error) {
+	user, err := GetRow[DBUser](
+		`UPDATE users
+	 	 SET display_name = $2
+	     WHERE id = $1
+	     RETURNING *`,
+		user.Id, user.DisplayName)
+	if err != nil {
+		logger.Error("error updating user: %v", err)
+	}
+	return user, err
+}

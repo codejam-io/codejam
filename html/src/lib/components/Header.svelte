@@ -1,37 +1,71 @@
 <script lang="ts">
 
 import Banner from "./Banner.svelte";
-import {Navbar, NavHamburger, NavLi, NavUl} from "flowbite-svelte";
-import {loggedInStore, userStore} from "../stores/stores";
+import {
+    Dropdown,
+    DropdownDivider,
+    DropdownHeader,
+    DropdownItem,
+    Navbar,
+    NavHamburger,
+    NavLi,
+    NavUl
+} from "flowbite-svelte";
+import {activeUserStore} from "../stores/stores";
 import DiscordIcon from "./DiscordIcon.svelte";
 import {location} from "svelte-spa-router";
-import { type User } from '../models/user'
+import UserAvatar from "./UserAvatar.svelte";
 
-// reactive statement - "location" will change whenever url changes 
+// reactive statement - "location" will change whenever url changes
 $: activeUrl = '/#' + $location;
-</script>
 
+</script>
 
 <div class="flex flex-row w-fit pl-8">
     <Banner size="normal" />
     <div class="absolute right-0 top-0">
-        
-        <Navbar class="rounded-bl-3xl">
-            <NavHamburger/>
-            <NavUl {activeUrl}>
-                <!-- It is important to prefix links with /#/ to prevent reloading of the entire app -->
-                <NavLi href="/#/">Home</NavLi>
-                {#if $loggedInStore}
-                    {#if $userStore?.Role === "ADMIN" }
-                    <NavLi href="/#/admin/events">Manage Events</NavLi>
+
+        <!-- We don't want to set any initial component state until the activeUserStore has been initially
+             set to avoid flickering state changes while data is initially loaded -->
+        {#await $activeUserStore}
+            <!-- do nothing-->
+        {:then activeUser}
+            {#if activeUser !== null}
+                <Navbar class="rounded-bl-3xl">
+                    {#if activeUser != null && activeUser.user != null}
+                        <div class="flex items-center md:order-2">
+                            <div id="menu-avatar">
+                                <UserAvatar user={activeUser.user} class="mx-8 cursor-pointer" size="md"></UserAvatar>
+                            </div>
+                            <NavHamburger class1="w-full md:flex md:w-auto md:order-1" />
+                        </div>
+                        <!-- the binding to the triggeredBy element happens in the components onMount, and the target
+                             element needs to already be mounted so the Dropdown can find it.  So we need to wait for
+                             the activeUserStore to be initially set before these components are mounted to prevent
+                             a race condition when the Dropdown doesn't bind and therefore won't work -->
+                        <Dropdown class="w-44" placement="bottom" triggeredBy="#menu-avatar" trigger="hover">
+                            <DropdownHeader>{activeUser.user?.DisplayName}</DropdownHeader>
+                            <DropdownItem href="/#/profile">Profile</DropdownItem>
+                            <DropdownDivider />
+                            <DropdownItem href="/user/logout">Logout</DropdownItem>
+                        </Dropdown>
                     {/if}
-                    <NavLi href="/#/team">Sign-Up</NavLi>
-                    <NavLi href="/#/teams">My Teams</NavLi>
-                    <NavLi href="/user/logout">Logout</NavLi>
-                {:else}
-                    <NavLi href="/oauth/redirect">Login with Discord <DiscordIcon/></NavLi>
-                {/if}
-            </NavUl>
-        </Navbar>
+                    <NavUl {activeUrl} classUl="items-center px-4 py-1">
+                        <!-- It is important to prefix links with /#/ to prevent reloading of the entire app -->
+                        <NavLi href="/#/">Home</NavLi>
+                        {#if activeUser.user !== null}
+                            {#if activeUser.user?.Role === "ADMIN" }
+                                <NavLi href="/#/admin/events">Manage Events</NavLi>
+                            {/if}
+                            <NavLi href="/#/team">Sign-Up</NavLi>
+                            <NavLi href="/#/teams">My Teams</NavLi>
+
+                        {:else}
+                            <NavLi href="/oauth/redirect">Login with Discord <DiscordIcon/></NavLi>
+                        {/if}
+                    </NavUl>
+                </Navbar>
+            {/if}
+        {/await}
     </div>
 </div>

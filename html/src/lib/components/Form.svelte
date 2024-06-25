@@ -42,7 +42,7 @@
 
     export const parseResponse = (response: Response) => {
         if (response.status === 200) {
-            toast.success("Event Saved Successfully!");
+            toast.success("Save Successful!");
         } else {
             toast.error("Error Saving.")
             response.json()

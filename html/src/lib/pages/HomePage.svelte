@@ -26,15 +26,15 @@
 		{#if $activeEventStore !== null}
 			<div id="timeline" class="card !bg-[#ede0fa]">
 				<h3>Timeline</h3>
-				{$activeEventStore?.Timeline}
+				<pre class="whitespace-pre-wrap">{@html $activeEventStore?.Timeline}</pre>
 			</div>
 			<div id="goals" class="card !bg-pink-100">
 				<h3>Goals</h3>
-				<pre class="whitespace-pre-wrap">{$activeEventStore?.Description}</pre>
+				<pre class="whitespace-pre-wrap">{@html $activeEventStore?.Description}</pre>
 			</div>
 			<div id="rules" class="card !bg-[#cee9f3]">
 				<h3>Rules</h3>
-				<pre>{$activeEventStore?.Rules}</pre>
+				<pre class="whitespace-pre-wrap">{@html $activeEventStore?.Rules}</pre>
 			</div>
 		{:else}
 			<h1>No Active Events, Stay Tuned!</h1>
