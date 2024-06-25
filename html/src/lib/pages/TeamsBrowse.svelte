@@ -40,11 +40,11 @@ loadData();
 		{:else if error}
 			<div class="p-4 text-red-500">{error}</div>
         
-		{:else if allTeams.length == 0}
+		{:else if allTeams === null}
             <div>
                 Looks like you don't have any teams! Go to <a href="/#/">browse teams</a> to join one!
             </div>
-        {:else if allTeams == null}
+        {:else if allTeams.length === 0}
             <div>
                 Error, please contact admin.
             </div>
