@@ -18,6 +18,7 @@ type Server struct {
 	Config config.Config
 	OAuth  *oauth2.Config
 	Gin    *gin.Engine
+	Debug bool
 }
 
 func (server *Server) SetupSessionStore() {

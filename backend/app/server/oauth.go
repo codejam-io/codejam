@@ -1,6 +1,10 @@
 package server
 
 import (
+	"net/http"
+	"os"
+	"strings"
+
 	"codejam.io/database"
 	"codejam.io/integrations"
 	"github.com/emicklei/pgtalk/convert"
@@ -8,13 +12,15 @@ import (
 	"github.com/gin-gonic/gin"
 	"golang.org/x/oauth2"
 	githubOAuth "golang.org/x/oauth2/github"
-	"net/http"
-	"os"
-	"strings"
 )
 
 // SetupOAuth initializes the OAuth provider specified in the application config.
 func (server *Server) SetupOAuth() {
+	if server.Debug {
+		logger.Warn("Debug mode is set. No OAuth Providers are set!")
+		return
+	}
+	
 	var endpoint oauth2.Endpoint
 
 	switch strings.ToLower(server.Config.OAuth.Provider) {
@@ -40,8 +46,28 @@ func (server *Server) SetupOAuth() {
 }
 
 func (server *Server) GetOAuthRedirect(ctx *gin.Context) {
+	if server.Debug {
+		ctx.Redirect(http.StatusFound, "/oauth/debug-login")
+		return
+	}
+
 	url := server.OAuth.AuthCodeURL(ctx.Request.Header.Get("Referer"))
 	ctx.Redirect(http.StatusFound, url)
+}
+
+func (server *Server) GetDebugSession(ctx *gin.Context) {
+	redir := ctx.Query("state")
+
+	session := sessions.Default(ctx)
+	session.Set("userId", "424384163454517268")
+	session.Set("displayName", "estha")
+	err := session.Save()
+
+	if err != nil {
+		logger.Error("Error saving debug session: %v", err)
+	}
+
+	ctx.Redirect(http.StatusFound, redir)
 }
 
 func (server *Server) GetOAuthCallback(ctx *gin.Context) {
@@ -80,5 +106,6 @@ func (server *Server) SetupOAuthRoutes() {
 	{
 		group.GET("/redirect", server.GetOAuthRedirect)
 		group.GET("/callback", server.GetOAuthCallback)
+		group.GET("/debug-login", server.GetDebugSession)
 	}
 }
