@@ -63,7 +63,6 @@ function saveForm() {
                 // const teamId = pathSegments[pathSegments.length - 1];
                 response.json()
                     .then((data) => {
-                        console.log(data.id)
 
                         // Stepp 1: GET team info
                         // this uses routes.ts --> MyTeam.svelte page

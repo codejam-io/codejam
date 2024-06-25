@@ -12,7 +12,7 @@
 	import DiscordIcon from '../components/DiscordIcon.svelte';
 
 	export let params: any; // set by svelte-spa-router
-    console.log(params) // returns Object { invitecode: "d1869a59b4fdf3" }
+    //console.log(params) // returns Object { invitecode: "d1869a59b4fdf3" }
     console.log(params.invitecode)
 
 	let teamData: CodeJamTeam | null = null;

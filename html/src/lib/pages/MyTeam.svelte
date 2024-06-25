@@ -9,7 +9,10 @@
 	import CodeJamEvent from '../models/event';
 	import { loggedInStore, userStore } from '../stores/stores';
 
-	export let params: any; // set by svelte-spa-router
+	interface Params {  // THis is what the params is because you pass an id with type of string.
+		id: string
+	}
+	export let params: Params;
 
 	let teamData: CodeJamTeam | null = null;
 	let teamMembers: TeamMember[] = [];
@@ -26,14 +29,13 @@
 			teamEvent = data.Event;
 		} catch (err) {
 			error = `Failed to load team data: ${err}`; 
-			console.error(err);
 		} finally {
 			loading = false;
 		}
 	}
 
 	$: if (params) {
-		loadData(params.id);
+		loadData(params.id);  // See this doesn't error cause it expects an id: You can run to see I guess
 	}
 </script>
 <!-- TODO: Create Owner, Member, and Public View -->

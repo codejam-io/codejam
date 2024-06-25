@@ -1,37 +1,37 @@
 <script lang="ts">
-	import Page from '../components/Page.svelte';
-	import { Breadcrumb, BreadcrumbItem, Card} from 'flowbite-svelte';
+import Page from '../components/Page.svelte';
+import { Breadcrumb, BreadcrumbItem, Card} from 'flowbite-svelte';
 
-	import CodeJamTeam from '../models/team';
-    import CodeJamEvent from '../models/event';
-	import { getUserTeams } from '../services/services';
-	import type TeamMember from '../models/TeamMember';
+import CodeJamTeam from '../models/team';
+import CodeJamEvent from '../models/event';
+import { getUserTeams } from '../services/services';
+import type TeamMember from '../models/TeamMember';
 
-	export const params: Record<string, never> = {};
-	
-	let teamData: CodeJamTeam | null = null;
-    let teamEvent: CodeJamEvent | null = null;
-	let teamMembers: TeamMember[] = [];
-	let loading: boolean = true;
-	let error: string | null = null;
-    let userTeams: CodeJamTeam[]
+export const params: Record<string, never> = {};
 
-	async function loadData() {
-		try {
-			const response = await getUserTeams();
-		    userTeams = await response.json();  // Array of teams...
-            console.log(userTeams)
+let teamData: CodeJamTeam | null = null;
+let teamEvent: CodeJamEvent | null = null;
+let teamMembers: TeamMember[] = [];
+let loading: boolean = true;
+let error: string | null = null;
+let userTeams: CodeJamTeam[]
 
-		} catch (err) {
-			error = `Failed to load team data: ${err}`;
-			console.error(err);
-		} finally {
-			loading = false;
-		}
-	}
+async function loadData() {
+    try {
+        const response = await getUserTeams();
+        userTeams = await response.json();  // Array of teams...
+        console.log(userTeams)
 
-    
-	loadData();
+    } catch (err) {
+        error = `Failed to load team data: ${err}`;
+        console.error(err);
+    } finally {
+        loading = false;
+    }
+}
+
+
+loadData();
 </script>
 <!-- TODO: Make this page only accessible by team owner 
 If not team owner, cannot view-->

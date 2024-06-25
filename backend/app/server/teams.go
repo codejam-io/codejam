@@ -50,6 +50,7 @@ func (server *Server) GetAllTeams(ctx *gin.Context) {
 		ctx.JSON(http.StatusOK, teams)
 	} else {
 		ctx.Status(http.StatusInternalServerError)
+		return
 	}
 }
 
@@ -255,7 +256,7 @@ func (server *Server) SetupTeamRoutes() {
 	group := server.Gin.Group("/team")
 	{
 		group.POST("/", server.CreateTeam)
-		group.GET("/", server.GetAllTeams)
+		//group.GET("/", server.GetAllTeams)
 		group.GET("/:id", server.GetTeamInfo)
 		group.GET("/invite/:invitecode", server.GetTeamInfoByInviteCode)
 		// group.PUT("/:id", server.UpdateTeam)
@@ -263,4 +264,5 @@ func (server *Server) SetupTeamRoutes() {
 	}
 
 	server.Gin.GET("/teams", server.GetUserTeams) // I think this works rofl
+	server.Gin.GET("/teams/browse", server.GetAllTeams)
 }
