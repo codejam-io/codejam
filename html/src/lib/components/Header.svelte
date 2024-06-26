@@ -11,7 +11,7 @@ import {
     NavLi,
     NavUl
 } from "flowbite-svelte";
-import {activeUserStore} from "../stores/stores";
+import {activeUserStore, activeEventStore} from "../stores/stores";
 import DiscordIcon from "./DiscordIcon.svelte";
 import {location} from "svelte-spa-router";
 import UserAvatar from "./UserAvatar.svelte";
@@ -57,8 +57,10 @@ $: activeUrl = '/#' + $location;
                             {#if activeUser.user?.Role === "ADMIN" }
                                 <NavLi href="/#/admin/events">Manage Events</NavLi>
                             {/if}
-                            <NavLi href="/#/team">Sign-Up</NavLi>
-                            <NavLi href="/#/teams">My Teams</NavLi>
+                            {#if $activeEventStore && $activeEventStore.AllowSignups}
+                                <NavLi href="/#/team">Sign-Up</NavLi>
+                                <NavLi href="/#/teams">My Teams</NavLi>
+                            {/if}
 
                         {:else}
                             <NavLi href="/oauth/redirect">Login with Discord <DiscordIcon/></NavLi>
