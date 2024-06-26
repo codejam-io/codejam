@@ -59,8 +59,8 @@ $: activeUrl = '/#' + $location;
                             {/if}
                             {#if $activeEventStore && $activeEventStore.AllowSignups}
                                 <NavLi href="/#/team">Sign-Up</NavLi>
+                                <NavLi href="/#/teams">My Teams</NavLi>
                             {/if}
-                            <NavLi href="/#/teams">My Teams</NavLi>
 
                         {:else}
                             <NavLi href="/oauth/redirect">Login with Discord <DiscordIcon/></NavLi>
