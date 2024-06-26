@@ -1,7 +1,7 @@
 ALTER TABLE statuses ADD COLUMN IF NOT EXISTS sort int;
 
-INSERT INTO statuses (code, title, description) VALUES ('SIGNUP', 'Signups Accepted', 'Users may begin signing up and creating teams.');
-INSERT INTO statuses (code, title, description) VALUES ('COMPLETED', 'Complete', 'Competition is over.  Results may still be viewed, but not more voting is allowed');
+INSERT INTO statuses (id, code, title, description) VALUES (6, 'SIGNUP', 'Signups Accepted', 'Users may begin signing up and creating teams.');
+INSERT INTO statuses (id, code, title, description) VALUES (7, 'COMPLETED', 'Complete', 'Competition is over.  Results may still be viewed, but not more voting is allowed');
 
 UPDATE statuses SET sort = 1 WHERE code='PLANNING';
 UPDATE statuses SET sort = 2 WHERE code='PUBLISHED';
