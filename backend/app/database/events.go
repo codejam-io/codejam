@@ -23,6 +23,7 @@ type DBEventStatus struct {
 	Code        string `db:"code"`
 	Title       string `db:"title"`
 	Description string `db:"description"`
+	Sort        int    `db:"sort"`
 }
 
 type DBEventStatusCode struct {
@@ -97,6 +98,6 @@ func UpdateEvent(event DBEvent) (DBEvent, error) {
 }
 
 func GetStatuses() ([]DBEventStatus, error) {
-	statuses, err := GetRows[DBEventStatus](`SELECT * FROM statuses`)
+	statuses, err := GetRows[DBEventStatus](`SELECT * FROM statuses ORDER BY sort`)
 	return statuses, err
 }

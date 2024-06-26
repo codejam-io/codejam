@@ -1,0 +1,3 @@
+ALTER TABLE statuses DROP COLUMN sort;
+
+DELETE FROM statuses WHERE code in ('SIGNUP', 'COMPLETED');
