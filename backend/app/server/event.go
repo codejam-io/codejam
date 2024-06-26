@@ -3,6 +3,7 @@ package server
 import (
 	"codejam.io/database"
 	"codejam.io/server/models"
+	"errors"
 	"github.com/emicklei/pgtalk/convert"
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/gin"
@@ -11,6 +12,11 @@ import (
 	"net/http"
 	"strings"
 )
+
+type CodeJamEvent struct {
+	database.DBEvent
+	AllowSignups bool
+}
 
 func sanitizeEvent(event *database.DBEvent) {
 	event.Title = sanitize.Scripts(event.Title)
@@ -48,14 +54,23 @@ func (server *Server) GetEvent(ctx *gin.Context) {
 
 func (server *Server) GetActiveEvent(ctx *gin.Context) {
 	event, err := database.GetActiveEvent()
-	if err == nil {
-		ctx.JSON(http.StatusOK, event)
-	} else if err == pgx.ErrNoRows {
-		ctx.Status(http.StatusNoContent)
-	} else {
-		logger.Error("GetActiveEvent error: %v", err)
-		ctx.Status(http.StatusInternalServerError)
+
+	if err != nil {
+		if errors.Is(err, pgx.ErrNoRows) {
+			// NoRows means no active event exist (or it's still set to PLANNING)
+			ctx.Status(http.StatusNoContent)
+		} else {
+			logger.Error("GetActiveEvent error: %v", err)
+			ctx.Status(http.StatusInternalServerError)
+		}
+		return
 	}
+
+	var codeJamEvent = CodeJamEvent{
+		DBEvent:      event,
+		AllowSignups: server.signupsAllowed(convert.UUIDToString(event.Id)),
+	}
+	ctx.JSON(http.StatusOK, codeJamEvent)
 }
 
 func (server *Server) PostEvent(ctx *gin.Context) {

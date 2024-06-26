@@ -44,6 +44,20 @@ func MD5HashCode(teamName string) (string, error) {
 	return hex.EncodeToString(hash[:7]), nil
 }
 
+func (server *Server) signupsAllowed(eventId string) bool {
+	statusCode, err := database.GetEventStatusCode(convert.StringToUUID(eventId))
+	if err != nil {
+		logger.Error("Error in GetEventStatusCode: %v+", err)
+		return false
+	}
+
+	if statusCode == "SIGNUP" || statusCode == "STARTED" {
+		return true
+	} else {
+		return false
+	}
+}
+
 func (server *Server) GetAllTeams(ctx *gin.Context) {
 	teams, err := database.GetTeams()
 	if err == nil {
@@ -69,15 +83,15 @@ func (server *Server) GetUserTeams(ctx *gin.Context) {
 	if err != nil {
 		ctx.Status(http.StatusInternalServerError)
 		return
-	} 
+	}
 
 	//1. join databse to return members
 	ctx.JSON(http.StatusOK, teams)
-		
-		// add all the GetTeamResponse to []GetTeamResponse
-		// loop through teams, get team id
-		// assign each team to teamResponse type..
-	
+
+	// add all the GetTeamResponse to []GetTeamResponse
+	// loop through teams, get team id
+	// assign each team to teamResponse type..
+
 }
 
 // stepp 4: GET team info
@@ -165,7 +179,7 @@ func (server *Server) CreateTeam(ctx *gin.Context) {
 	// Step 4: Post Team Data API (TWO PARTS 1) create team 2) add team members)
 	session := sessions.Default(ctx)
 	userId := session.Get("userId")
-	if userId != nil {
+	if userId == nil {
 		ctx.Status(http.StatusUnauthorized)
 		return
 	}
@@ -181,6 +195,11 @@ func (server *Server) CreateTeam(ctx *gin.Context) {
 	if err != nil {
 		logger.Error("CreateTeam Request ShouldBindJSON error: %v", err)
 		ctx.Status(http.StatusBadRequest)
+		return
+	}
+
+	if !server.signupsAllowed(teamReq.EventId) {
+		ctx.Status(http.StatusForbidden)
 		return
 	}
 

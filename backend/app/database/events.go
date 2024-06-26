@@ -1,6 +1,8 @@
 package database
 
-import "github.com/jackc/pgx/v5/pgtype"
+import (
+	"github.com/jackc/pgx/v5/pgtype"
+)
 
 type DBEvent struct {
 	Id              pgtype.UUID      `db:"id"`
@@ -21,6 +23,20 @@ type DBEventStatus struct {
 	Code        string `db:"code"`
 	Title       string `db:"title"`
 	Description string `db:"description"`
+}
+
+type DBEventStatusCode struct {
+	Code string `db:"code"`
+}
+
+func GetEventStatusCode(eventId pgtype.UUID) (string, error) {
+	result, err := GetRow[DBEventStatusCode](
+		`SELECT code
+         FROM events 
+         INNER JOIN statuses ON (events.status_id = statuses.id)
+         WHERE events.id = $1`,
+		eventId)
+	return result.Code, err
 }
 
 func CreateEvent(organizerUserId pgtype.UUID) (DBEvent, error) {

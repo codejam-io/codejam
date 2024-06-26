@@ -1,4 +1,3 @@
-
 class CodeJamEvent {
 
     Id : string;
@@ -7,6 +6,7 @@ class CodeJamEvent {
     Description: string;
     Timeline: string;
     Rules: string;
+    AllowSignups: boolean;
 
     constructor() {
         this.Id = '';
@@ -15,6 +15,7 @@ class CodeJamEvent {
         this.Description = '';
         this.Rules = '';
         this.Timeline = '';
+        this.AllowSignups = false;
     }
 
 }
