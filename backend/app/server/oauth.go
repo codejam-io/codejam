@@ -58,7 +58,7 @@ func (server *Server) GetOAuthRedirect(ctx *gin.Context) {
 func (server *Server) GetDebugSession(ctx *gin.Context) {
 	redir := ctx.Query("state")
 
-	dbUser := database.CreateUser("discord", "0", "DebugCow")
+	dbUser := database.CreateUser("discord", "0", "DebugCow", "")
 	session := sessions.Default(ctx)
 	session.Set("userId", convert.UUIDToString(dbUser.Id))
 	session.Set("displayName", dbUser.DisplayName)
