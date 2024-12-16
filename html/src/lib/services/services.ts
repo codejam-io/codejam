@@ -1,8 +1,15 @@
-import {readable} from "svelte/store";
-import {userStore} from "../stores/stores";
+import {
+    activeEventStore,
+    eventStatusStore,
+    userStore,
+    activeUserStore
+} from "../stores/stores";
+import CodeJamEvent from "../models/event";
+import CodeJamTeam from "../models/team";
+import type { ActiveUser, User } from "../models/user";
 
 // This shouldn't ever need to be set since dev and prod environments will just use relative endpoints
-export let baseApiUrl : string = "";
+export let baseApiUrl: string = "";
 
 const originalFetch = window.fetch;
 
@@ -21,14 +28,16 @@ window.fetch = (...args) => {
 }
 
 export async function getUser() {
-    return fetch(baseApiUrl + "/user/", {method: 'GET', credentials: 'include'})
+    return fetch(baseApiUrl + "/user/", { method: 'GET', credentials: 'include' })
         .then((response) => {
             if (response.status === 401) {
                 userStore.set(null);
+                activeUserStore.set(<ActiveUser>{ user: null, loggedIn: false });
             } else {
                 response.json()
                     .then((data) => {
                         userStore.set(data);
+                        activeUserStore.set(<ActiveUser>{ user: data as User, loggedIn: true })
                     })
                     .catch((err) => {
                         console.error("error deserializing user", err);
@@ -37,15 +46,189 @@ export async function getUser() {
         });
 }
 
+interface PutProfileRequest {
+    DisplayName : string,
+}
+export async function putProfile(displayName: string): Promise<Response> {
+    const requestInit : RequestInit = {
+        method: 'PUT',
+        body: JSON.stringify(
+            <PutProfileRequest>{
+                DisplayName: displayName
+            }
+        )
+    }
+    return await fetch(`${baseApiUrl}/user/profile/`, requestInit);
+}
+
 export async function logout() {
     return fetch(baseApiUrl + "/user/logout")
-        .then((response) => {
+        .then(() => {
             userStore.set(null);
+            activeUserStore.set(<ActiveUser>{ user: null, loggedIn: false });
         })
         .catch((err) => {
             console.error("Logout error", err);
         });
 }
 
+export async function getActiveEvent() {
+    return fetch(baseApiUrl + "/event/active")
+        .then((response) => {
+            if (response.status === 401) {
+                userStore.set(null);
+            } else if (response.status === 204) {
+                activeEventStore.set(null);
+            } else {
+                response.json()
+                    .then((data) => {
+                        activeEventStore.set(data as CodeJamEvent);
+                    })
+                    .catch((err) => {
+                        console.error("error deserializing event", response, err);
+                    });
+            }
+        });
+}
+
+export async function getEvents() {
+    return fetch(baseApiUrl + "/event/");
+}
+
+export async function getEvent(id: string) {
+    return fetch(baseApiUrl + "/event/" + id);
+}
+
+export async function putEvent(event: CodeJamEvent) {
+    return await fetch(baseApiUrl + "/event/" + event.Id,
+        {
+            method: "PUT",
+            body: JSON.stringify(event)
+        });
+}
+
+export async function getEventStatuses() {
+    return fetch(baseApiUrl + "/event/statuses")
+        .then((response) => {
+            response.json()
+                .then((data) => {
+                    eventStatusStore.set(data)
+                });
+        })
+}
+
+export async function postTeam(team: CodeJamTeam) {
+    // Step 2: Post Team Data API (accepts formData(CodeJamTeam) as argument)
+    return await fetch(baseApiUrl + "/team/" + team.Id,
+        // formData turned into JSON and sent via POST, retreived at CreateTeam(ctx *gin.Context)
+        {
+            method: "POST",
+            body: JSON.stringify(team)
+        });
+}
+
+export async function putTeam(team: CodeJamTeam) { 
+    console.log("baseApiUrl:", baseApiUrl);
+    console.log("team.Id before URL construction:", team.Id);
+
+    if (team.Id == undefined) {
+        console.log("team.Id is undefined:", team.Id);
+    } else {
+        console.log("team.Id is:", team.Id);
+    }
+    let teamid: string = team.Id
+    // Construct the URL using template literals and encodeURIComponent for safety
+    const url = `${baseApiUrl}/team/edit/${teamid}`;
+    console.log("Constructed PUT request URL:", url);
+
+    const response = await fetch(url, {
+        method: "PUT",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify(team)
+    });
+    return response
+}
+
+export async function getTeams() {
+    return await fetch(baseApiUrl + "/teams/browse")
+}
+
+
+export async function getUserTeams() {
+    return fetch(baseApiUrl + "/teams");
+}
+
+export async function getTeamById(id: string) {
+    return fetch(baseApiUrl + "/team/" + id);
+}
+
+export async function getTeamByInvite(inviteCode: string) {
+    // stepp 3 pt 1:
+    return fetch(baseApiUrl + "/team/invite/" + inviteCode);
+}
+
+
+// any one who has a link joinTeam() works on, can join the team.
+// make sure invite_code matches 
+
+export async function joinTeam(teamId: string, inviteCode: string) {
+    // making a post to team_members
+    return await fetch(baseApiUrl + "/team/" + inviteCode,
+        {
+            method: "POST",
+            body: JSON.stringify({ teamId, inviteCode })
+        }
+    )
+}
+
+
+// write a joinPublicTeam function that accepts team Id.  
+// server: check if team is public.
+export async function joinPublicTeam(teamId: string) {
+    const response = await fetch(baseApiUrl + "/team/join",
+        {
+            method: "POST",
+            body: JSON.stringify({ teamId })
+        }
+    )
+    return response.json()
+}
+
+export async function removeMemberFromTeam(teamId: string, memberId: string) {
+    // DELETE request to remove a member from a specific team
+
+    const response = await fetch(baseApiUrl + `/team/${teamId}/member/${memberId}`, {
+        method: "DELETE",
+        headers: {
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ teamId, memberId })
+    });
+
+    // Check if response status is OK (successful deletion)
+    if (response.ok) {
+        // Log the full response for debugging purposes
+        console.log("Full response:", response);
+
+        // Check if the response has JSON content
+        const contentType = response.headers.get("content-type");
+        if (contentType && contentType.includes("application/json")) {
+            const jsonResponse = await response.json();
+            console.log("JSON Response:", jsonResponse); // Log the JSON response
+            return jsonResponse;
+        }
+
+        console.log("Response has no JSON content, returning empty object.");
+        return {}; // Return an empty object if no JSON response is provided
+    } else {
+        throw new Error(`Failed to delete member: ${response.status} ${response.statusText}`);
+    }
+}
+
 // Always call at startup to get the initial states
-getUser();
+async function initialLoad() {
+    await Promise.all([getUser(), getActiveEvent(), getEventStatuses()]);
+}
+initialLoad();

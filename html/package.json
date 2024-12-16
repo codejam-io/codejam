@@ -16,7 +16,7 @@
 		"@tsconfig/svelte": "^5.0.2",
 		"autoprefixer": "^10.4.16",
 		"flowbite": "^2.3.0",
-		"flowbite-svelte": "^0.45.0",
+		"flowbite-svelte": "^0.46.5",
 		"postcss": "^8.4.32",
 		"postcss-load-config": "^5.0.2",
 		"svelte": "^4.2.12",
@@ -30,6 +30,7 @@
 		"@fortawesome/free-brands-svg-icons": "^6.5.1",
 		"@fortawesome/free-solid-svg-icons": "^6.5.2",
 		"@fortawesome/svelte-fontawesome": "^0.2.2",
+		"svelte-sonner": "^0.3.24",
 		"svelte-spa-router": "^4.0.1"
 	}
 }

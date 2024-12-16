@@ -1,0 +1,16 @@
+<style>
+    .create-team-btn {
+        background-color: rgb(79, 176, 120);
+        color: white;
+		border-radius: 1rem;
+		padding: 1rem 2rem;
+        flex-shrink: 1; 
+        font-size: 1.2rem;
+        margin: 2rem;
+	}
+	button:hover {
+        filter: brightness(1.5)
+	}
+    </style>
+
+<button class="create-team-btn">Create a New Team</button>

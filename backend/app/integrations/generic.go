@@ -4,6 +4,7 @@ import (
 	"codejam.io/integrations/discord"
 	"codejam.io/integrations/github"
 	"codejam.io/logging"
+	"encoding/json"
 	"strings"
 )
 
@@ -12,8 +13,8 @@ var logger = logging.NewLogger(logging.Options{Name: "Integrations", Level: logg
 type IntegrationUser struct {
 	IntegrationName string
 	UserId          string
-	DisplayName     string
-	AvatarUrl       string
+	ServiceUserName string
+	AvatarId        string
 }
 
 func getGitHubUser(accessToken string) *IntegrationUser {
@@ -23,21 +24,29 @@ func getGitHubUser(accessToken string) *IntegrationUser {
 	} else {
 		return &IntegrationUser{
 			IntegrationName: "github",
-			UserId:          user["id"].(string),
+			UserId:          string(user["id"].(json.Number)),
 		}
 	}
 }
 
 func getDiscordUser(accessToken string) *IntegrationUser {
 	user := discord.GetUser(accessToken)
+	avatar, ok := user["avatar"].(string)
+	if !ok {
+		avatar = "" // Or set a default avatar URL if preferred
+	}
 	if user == nil {
 		logger.Error("User not found for token: %s", accessToken)
 		return nil
 	} else {
+		if user["avatar"] != nil {
+			avatar = user["avatar"].(string)
+		}
 		return &IntegrationUser{
 			IntegrationName: "discord",
 			UserId:          user["id"].(string),
-			DisplayName:     user["global_name"].(string),
+			ServiceUserName: user["global_name"].(string),
+			AvatarId:        avatar,
 		}
 	}
 }
@@ -51,5 +60,4 @@ func GetUser(integrationName string, accessToken string) *IntegrationUser {
 	default:
 		return nil
 	}
-
 }
